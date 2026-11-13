@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEBULA</title>
+<meta name="description" content="NEBULA — звёздная карта ссылок: полёт сквозь космос к сайту, 3D-галактика, пульт управления, профили и обмен.">
+<meta name="theme-color" content="#070a16">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='38%25' cy='34%25'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='.45' stop-color='%23ffb020'/%3E%3Cstop offset='1' stop-color='%23ff6a3d'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23070a16'/%3E%3Cpath d='M32 5v10M32 49v10M5 32h10M49 32h10' stroke='%23ffb020' stroke-width='3' stroke-linecap='round' opacity='.8'/%3E%3Ccircle cx='32' cy='32' r='13' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070a16'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23ffb020'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Manrope:wght@300..800&family=JetBrains+Mono:wght@300..700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--void:#070a16;--deep:#0a0f20;--surface:#111a30;--overlay:#0c1223;--scrim:rgba(4,6,14,.92);
+--line:rgba(146,176,255,.15);--line2:rgba(146,176,255,.32);
+--ink:#eef2ff;--muted:#95a4c6;--faint:#61708f;
+--amber:#ffb020;--ember:#ff6a3d;--cyan:#38e1ff;--acid:#b6ff3d;--magenta:#ff3d9a;--violet:#8b5cff;
+--ok:#3ddc97;--warn:#ffb020;--err:#ff4d6d;--info:#38e1ff;
+--accent:#ffb020;--accent2:#ff6a3d;--glow:rgba(255,176,32,.42);
+--grain:.05;--vig:.66;
+--nav:68px;--tele:26px;--spring:cubic-bezier(.34,1.42,.64,1);--ease:cubic-bezier(.22,1,.36,1);
+--mono:'JetBrains Mono',ui-monospace,monospace;--disp:'Space Grotesk',system-ui,sans-serif;--body:'Manrope',system-ui,sans-serif}
+html{scroll-behavior:smooth;scrollbar-color:var(--accent) var(--deep);scrollbar-width:thin}
+body{font-family:var(--body);background:var(--void);color:var(--ink);overflow-x:hidden;cursor:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--deep);border-left:1px solid var(--line)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--accent2));border:2px solid var(--deep);border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--accent),var(--magenta))}
+::selection{background:var(--accent);color:#170c00}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+a{color:inherit}button,input,select,textarea{font-family:inherit}
+.skip{position:fixed;left:14px;top:-70px;z-index:9000;padding:11px 18px;border-radius:11px;background:var(--accent);color:#170c00;font:700 12px var(--mono);letter-spacing:.12em;text-decoration:none;transition:top .25s}
+.skip:focus{top:14px}
+#space{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;opacity:.85}
+.grain{position:fixed;inset:-90px;z-index:4;pointer-events:none;opacity:var(--grain);mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='170' height='170' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1.1s steps(5) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-22px,14px)}50%{transform:translate(16px,-18px)}75%{transform:translate(-12px,-8px)}100%{transform:translate(0,0)}}
+.vig{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 42%,transparent 50%,rgba(2,3,9,var(--vig)) 100%)}
+.cursor{position:fixed;width:18px;height:18px;border:1.5px solid var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);display:grid;place-items:center;transition:width .28s var(--spring),height .28s var(--spring),border-color .25s,background .25s}
+.cursor.big{width:56px;height:56px;border-color:var(--cyan);background:rgba(56,225,255,.08)}
+.cursor span{font:700 7.5px var(--mono);letter-spacing:.1em;color:var(--cyan);opacity:0;transition:opacity .2s;text-align:center}
+.cursor.big span{opacity:1}
+.dot{position:fixed;width:4px;height:4px;border-radius:50%;background:var(--accent);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 8px var(--accent)}
+#trail{position:fixed;inset:0;z-index:60;pointer-events:none}
+#boot{position:fixed;inset:0;z-index:7000;background:radial-gradient(circle at 50% 46%,#0e1730,#04060f 72%);display:grid;place-items:center;transition:opacity .5s,visibility .5s}
+#boot.off{opacity:0;visibility:hidden}
+.boot-in{display:flex;flex-direction:column;align-items:center;gap:16px;width:min(360px,84vw)}
+.boot-mark{font:700 clamp(28px,6vw,46px)/1 var(--disp);letter-spacing:.44em;margin-left:.44em;display:flex}
+.boot-mark i{font-style:normal;opacity:0;transform:translateY(18px);animation:bIn .6s var(--spring) forwards;animation-delay:calc(var(--i)*70ms + 90ms);text-shadow:0 0 28px var(--glow)}
+@keyframes bIn{to{opacity:1;transform:none}}
+.boot-bar{width:100%;height:2px;background:rgba(255,255,255,.1);overflow:hidden}
+.boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--magenta));transition:width .12s}
+.boot-row{width:100%;display:flex;justify-content:space-between;font:500 9.5px var(--mono);letter-spacing:.24em;color:var(--faint)}
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav);z-index:300;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 18px;background:linear-gradient(180deg,rgba(6,9,20,.97),rgba(6,9,20,.86));border-bottom:1px solid var(--line);backdrop-filter:blur(14px)}
+.brand{font:700 18px var(--disp);letter-spacing:.16em;display:flex;align-items:center;gap:9px;text-decoration:none;flex:none}
+.brand .orb{width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 34% 32%,#fff,var(--accent) 46%,var(--accent2));box-shadow:0 0 14px var(--accent)}
+.brand b{color:var(--accent)}
+.nlinks{display:flex;gap:2px;list-style:none}
+.nlinks a{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:9px;font:600 12.5px var(--body);color:var(--muted);text-decoration:none;transition:.22s;position:relative}
+.nlinks a i{font:600 8.5px var(--mono);font-style:normal;color:var(--faint)}
+.nlinks a:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.nlinks a.on{color:var(--accent)}
+.nlinks a.on i{color:var(--accent)}
+.nlinks a.on::after{content:'';position:absolute;left:12px;right:12px;bottom:2px;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px}
+.nright{display:flex;align-items:center;gap:6px;flex:none}
+.chip{height:34px;padding:0 11px;border-radius:9px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--muted);font:600 10px var(--mono);letter-spacing:.1em;cursor:none;transition:.24s var(--spring);display:flex;align-items:center;gap:7px;white-space:nowrap}
+.chip:hover{color:var(--ink);border-color:var(--accent);transform:translateY(-2px)}
+.chip.hot{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#170c00;border-color:transparent;font-weight:700}
+.chip.on{background:linear-gradient(120deg,var(--cyan),var(--violet));color:#04121a;border-color:transparent;font-weight:700}
+.chip .led{width:7px;height:7px;border-radius:50%;background:var(--faint);box-shadow:0 0 8px currentColor;flex:none}
+.chip .led.ok{background:var(--ok)}.chip .led.warn{background:var(--warn)}.chip .led.err{background:var(--err)}
+.chip.dirty{animation:chipPulse 1.6s ease-in-out infinite}
+@keyframes chipPulse{50%{box-shadow:0 0 0 3px rgba(255,176,32,.12)}}
+.ico{width:34px;height:34px;border-radius:9px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--ink);display:grid;place-items:center;font-size:13px;cursor:none;transition:.24s var(--spring)}
+.ico:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.ico.on{background:linear-gradient(120deg,var(--cyan),var(--violet));border-color:transparent;color:#04121a}
+#menuBtn{display:none}
+#prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:310;background:linear-gradient(90deg,var(--accent),var(--magenta),var(--cyan));box-shadow:0 0 12px var(--glow)}
+#tele{position:fixed;top:var(--nav);left:0;right:0;height:var(--tele);z-index:299;display:flex;align-items:center;gap:16px;padding:0 18px;background:rgba(5,8,17,.9);border-bottom:1px solid var(--line);font:500 9px var(--mono);letter-spacing:.2em;color:var(--faint);overflow:hidden;white-space:nowrap}
+#tele b{color:var(--accent);font-weight:600}
+#tele .sep{opacity:.35}
+#tele .push{margin-left:auto}
+#page{position:relative;z-index:5;transition:transform .6s cubic-bezier(.5,0,.75,0),filter .6s,opacity .5s}
+body.warping #page{transform:scale(1.3);filter:blur(16px) brightness(1.7);opacity:0}
+body.warping .nav,body.warping #tele,body.warping #mini,body.warping #panel,body.warping #panelScrim,body.warping #toTop,body.warping #bulkBar{opacity:0;pointer-events:none;transition:opacity .3s}
+section{padding:88px 24px;position:relative;scroll-margin-top:calc(var(--nav) + var(--tele) + 14px)}
+.wrap{max-width:1320px;margin:0 auto}
+.sechead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:26px;padding-bottom:14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.sechead .l{max-width:660px}
+.sechead .num{font:700 9px var(--mono);letter-spacing:.34em;color:var(--accent2);display:block;margin-bottom:10px}
+.sechead h2{font:700 clamp(28px,5vw,50px)/1 var(--disp);margin-bottom:10px;letter-spacing:-.01em}
+.sechead p{color:var(--muted);font-size:13.5px;line-height:1.65}
+.sechead .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:99px;border:1px solid var(--line2);font:600 9.5px var(--mono);letter-spacing:.16em;color:var(--muted)}
+.pill b{color:var(--accent)}
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-top:calc(var(--nav) + var(--tele))}
+.hero h1{font:700 clamp(52px,14vw,158px)/.86 var(--disp);letter-spacing:-.02em;margin-bottom:22px}
+.hero h1 span{display:inline-block;background:linear-gradient(168deg,#fff 8%,var(--accent) 46%,var(--accent2) 74%,var(--magenta));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;opacity:0;transform:translateY(32px) scale(.86);animation:hIn .8s var(--spring) forwards;animation-delay:calc(var(--i)*80ms)}
+@keyframes hIn{to{opacity:1;transform:none}}
+.hero p{max-width:620px;color:var(--muted);font-size:15.5px;line-height:1.72;margin-bottom:28px}
+.cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{height:45px;padding:0 20px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.045);color:var(--ink);font:700 12px var(--body);cursor:none;display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;transition:.28s var(--spring)}
+.btn:hover{transform:translateY(-3px);border-color:var(--cyan)}
+.btn.p{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#170c00;border-color:transparent}
+.btn.p:hover{box-shadow:0 16px 40px -14px var(--accent)}
+.btn.d{border-color:var(--err);color:var(--err)}
+.btn.s{height:34px;padding:0 13px;font-size:11px}
+.stats{display:flex;gap:32px;margin-top:40px;flex-wrap:wrap;justify-content:center}
+.st b{display:block;font:700 26px var(--disp);color:var(--accent)}
+.st span{font:600 8.5px var(--mono);letter-spacing:.2em;color:var(--faint)}
+.ticker{position:relative;z-index:5;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(8,12,24,.6);overflow:hidden;padding:11px 0}
+.ticker-in{display:flex;gap:34px;width:max-content;animation:tick 38s linear infinite;font:600 10.5px var(--mono);letter-spacing:.26em;color:var(--faint);text-transform:uppercase}
+.ticker-in span b{color:var(--accent)}
+@keyframes tick{to{transform:translateX(-50%)}}
+.favgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,282px),1fr));gap:18px}
+.fav{height:388px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(170deg,rgba(21,31,54,.92),rgba(9,14,27,.94));padding:22px;display:flex;flex-direction:column;position:relative;overflow:hidden;text-decoration:none;transition:transform .5s var(--spring),border-color .3s,box-shadow .4s}
+.fav::before{content:'';position:absolute;inset:0;background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--c) 22%,transparent),transparent 62%);opacity:0;transition:opacity .35s;pointer-events:none}
+.fav:hover{transform:translateY(-10px);border-color:var(--c);box-shadow:0 30px 70px -30px var(--c)}
+.fav:hover::before{opacity:1}
+.fav .num{position:absolute;right:14px;top:4px;font:700 54px var(--disp);color:rgba(255,255,255,.05)}
+.fav .ic{width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.06);border:1px solid var(--line2);display:grid;place-items:center;margin-bottom:15px;position:relative}
+.fav .ic img{width:28px;height:28px;object-fit:contain}
+.fav .ic b{position:absolute;right:-7px;bottom:-7px;width:22px;height:22px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:11px;border:2px solid var(--deep)}
+.fav h3{font:700 22px var(--disp);margin-bottom:7px}
+.fav .dm{font:500 10px var(--mono);color:var(--c);letter-spacing:.08em;margin-bottom:11px}
+.fav p{color:var(--muted);font-size:12.5px;line-height:1.6;flex:1}
+.fav .go{display:flex;align-items:center;justify-content:space-between;border-top:1px dashed var(--line2);padding-top:12px;font:700 10px var(--mono);letter-spacing:.16em;color:var(--c)}
+.fav .unfav{position:absolute;right:12px;bottom:60px;width:28px;height:28px;border-radius:8px;border:1px solid var(--line2);background:rgba(8,12,24,.8);color:var(--accent);font-size:13px;cursor:none;opacity:0;transition:.22s;display:grid;place-items:center}
+.fav:hover .unfav{opacity:1}
+.fav .unfav:hover{background:var(--accent);color:#170c00}
+.favmore{display:flex;justify-content:center;margin-top:20px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tag{padding:4px 9px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.04);font:500 9.5px var(--mono);color:var(--faint);cursor:none}
+.tag:hover{color:var(--ink);border-color:var(--line2)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.search{flex:1;min-width:210px;display:flex;align-items:center;gap:10px;height:44px;padding:0 13px;border:1px solid var(--line2);border-radius:12px;background:rgba(255,255,255,.04)}
+.search:focus-within{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,225,255,.12)}
+.search b{font:700 12px var(--mono);color:var(--cyan)}
+.search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--ink);font:500 13.5px var(--body);cursor:none}
+.search .clr{width:24px;height:24px;border-radius:7px;border:0;background:none;color:var(--faint);font-size:13px;cursor:none;display:none;place-items:center}
+.search .clr.on{display:grid}
+.search .clr:hover{color:var(--err)}
+.sel{height:44px;padding:0 30px 0 13px;border:1px solid var(--line2);border-radius:12px;background:rgba(255,255,255,.04);color:var(--muted);font:600 10px var(--mono);letter-spacing:.1em;appearance:none;cursor:none;max-width:190px;background-image:linear-gradient(45deg,transparent 50%,var(--accent) 50%),linear-gradient(135deg,var(--accent) 50%,transparent 50%);background-position:calc(100% - 16px) 19px,calc(100% - 11px) 19px;background-size:5px 5px;background-repeat:no-repeat}
+.vw{display:flex;gap:5px}
+.vb{width:44px;height:44px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--muted);font-size:15px;cursor:none;transition:.24s var(--spring)}
+.vb.on{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#170c00;border-color:transparent}
+.subtools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.f{padding:8px 13px;border-radius:99px;border:1px solid var(--line2);background:transparent;color:var(--muted);font:600 10px var(--mono);letter-spacing:.1em;cursor:none;transition:.24s var(--spring);display:flex;align-items:center;gap:7px}
+.f i{width:7px;height:7px;border-radius:50%;background:var(--fc,var(--muted));font-style:normal}
+.f:hover{color:var(--ink);transform:translateY(-2px)}
+.f.on{background:var(--fc,var(--accent));border-color:transparent;color:#0a0d16;font-weight:700}
+.f.on i{background:#0a0d16}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,286px),1fr));gap:15px}
+.grid.list{grid-template-columns:1fr}
+.card{position:relative;border:1px solid var(--line);border-radius:16px;background:linear-gradient(170deg,rgba(19,28,49,.88),rgba(9,14,26,.92));padding:16px;display:flex;flex-direction:column;min-height:208px;overflow:hidden;transition:transform .4s var(--spring),border-color .3s,box-shadow .35s,opacity .25s}
+.card:hover{transform:translateY(-6px);border-color:var(--c);box-shadow:0 24px 50px -28px var(--c)}
+.card.picked{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan),0 20px 44px -26px var(--cyan)}
+.card.dragging{opacity:.35}
+.card.dropat{box-shadow:inset 4px 0 0 var(--cyan)}
+.grid.list .card{min-height:0;display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px}
+.grid.list .card p,.grid.list .tags{display:none}
+.card .top{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}
+.card h3{font:700 16px var(--disp);display:flex;align-items:center;gap:9px;min-width:0}
+.card h3 span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card h3 img{width:18px;height:18px;object-fit:contain;flex:none}
+.acts{display:flex;gap:2px;opacity:.35;transition:opacity .25s;flex:none}
+.card:hover .acts,.card.picked .acts{opacity:1}
+.mini{width:25px;height:25px;border-radius:8px;border:1px solid transparent;background:none;color:var(--muted);font-size:11.5px;cursor:none;display:grid;place-items:center;transition:.2s}
+.mini:hover{background:rgba(255,255,255,.07);border-color:var(--line2);color:var(--ink)}
+.mini.star.on{color:var(--accent);text-shadow:0 0 10px var(--accent)}
+.mini.pick.on{color:var(--cyan)}
+.mini.del:hover{color:var(--err);border-color:var(--err)}
+.mini.grab{cursor:grab}
+.card .dm{font:500 10px var(--mono);color:var(--faint);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.card .dm em{width:6px;height:6px;border-radius:50%;background:var(--c);font-style:normal;box-shadow:0 0 8px var(--c);flex:none}
+.card p{color:var(--muted);font-size:12.5px;line-height:1.56;flex:1;margin-bottom:10px}
+.card .foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;gap:10px}
+.cat{padding:4px 9px;border-radius:99px;background:var(--c);color:#0a0d16;font:700 8.5px var(--mono);letter-spacing:.12em;white-space:nowrap}
+.card .open{font:700 9.5px var(--mono);letter-spacing:.14em;color:var(--c);display:flex;align-items:center;gap:6px;cursor:none;background:none;border:0}
+.card .open:hover{gap:10px}
+.empty{grid-column:1/-1;text-align:center;padding:56px 20px;border:1px dashed var(--line2);border-radius:18px}
+.empty b{display:block;font:700 18px var(--disp);margin-bottom:8px}
+.empty span{color:var(--muted);font-size:13px}
+.deckwrap{position:relative;height:452px;max-width:378px;margin:0 auto;perspective:1100px}
+.dk{position:absolute;inset:0;border-radius:20px;border:1px solid var(--line);background:linear-gradient(170deg,rgba(21,31,54,.95),rgba(9,14,27,.96));padding:24px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .45s var(--spring),opacity .4s;overflow:hidden}
+.dk.l1{transform:scale(.94) translateY(15px) rotate(1.6deg);opacity:.65;z-index:-1}
+.dk.l2{transform:scale(.88) translateY(28px) rotate(-2deg);opacity:.4;z-index:-2}
+.dk.fr{transform:translateX(130%) rotate(15deg);opacity:0}
+.dk.fl{transform:translateX(-130%) rotate(-15deg);opacity:0}
+.dkctl{display:flex;justify-content:center;gap:14px;margin-top:18px}
+.dkb{width:54px;height:54px;border-radius:50%;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--ink);font-size:18px;cursor:none;transition:.28s var(--spring)}
+.dkb:hover{transform:scale(1.13);border-color:var(--accent)}
+.dkcount{text-align:center;margin-top:12px;font:600 9.5px var(--mono);letter-spacing:.2em;color:var(--faint)}
+.sysgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;margin-bottom:22px}
+.spec{border:1px solid var(--line);border-radius:16px;padding:20px;background:linear-gradient(170deg,rgba(17,26,48,.7),rgba(8,12,24,.8));position:relative;overflow:hidden}
+.spec .n{font:700 9px var(--mono);letter-spacing:.3em;color:var(--accent2);margin-bottom:12px}
+.spec b{display:block;font:700 clamp(26px,4vw,38px) var(--disp);color:var(--ink);margin-bottom:6px}
+.spec span{font:500 11px var(--mono);letter-spacing:.14em;color:var(--faint)}
+.spec::after{content:'';position:absolute;right:-30px;bottom:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 18%,transparent),transparent 70%)}
+.alist{display:grid;gap:10px}
+.arow{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:15px 16px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.022);transition:.28s var(--spring)}
+.arow:hover{border-color:var(--accent);transform:translateX(4px)}
+.arow .let{font:700 15px var(--mono);color:var(--accent)}
+.arow h4{font:700 14.5px var(--disp);margin-bottom:5px}
+.arow p{font-size:12.5px;color:var(--muted);line-height:1.6}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.in{opacity:1;transform:none}
+#bulkBar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(160%);z-index:295;display:flex;align-items:center;gap:9px;padding:11px 15px;border:1px solid var(--line2);border-radius:15px;background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(7,11,22,.99));box-shadow:0 24px 60px -22px #000;transition:transform .42s var(--spring);max-width:calc(100vw - 24px);flex-wrap:wrap;justify-content:center}
+#bulkBar.on{transform:translateX(-50%)}
+#bulkBar .n{font:700 10.5px var(--mono);letter-spacing:.14em;color:var(--cyan);padding-right:6px}
+#panelScrim{position:fixed;inset:0;z-index:318;background:rgba(4,6,14,.5);backdrop-filter:blur(2px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s,visibility .35s}
+#panelScrim.open{opacity:1;visibility:visible;pointer-events:auto}
+#panel{position:fixed;top:0;right:0;bottom:0;width:392px;max-width:100vw;z-index:320;display:flex;flex-direction:column;background:linear-gradient(200deg,rgba(13,20,38,.985),rgba(6,10,21,.99));border-left:1px solid var(--line2);box-shadow:-30px 0 80px -30px #000;transform:translateX(103%);opacity:0;visibility:hidden;pointer-events:none;transition:transform .46s var(--ease),opacity .3s,visibility .46s;overflow:hidden}
+#panel.open{transform:none;opacity:1;visibility:visible;pointer-events:auto}
+#panel.resizing{transition:none}
+.pgrip{position:absolute;left:0;top:0;bottom:0;width:8px;cursor:ew-resize;z-index:3}
+.pgrip::after{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:3px;height:54px;border-radius:3px;background:var(--line2);transition:.2s}
+.pgrip:hover::after{background:var(--accent);height:80px}
+.phead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line);flex:none}
+.phead .t{font:700 11.5px var(--mono);letter-spacing:.22em;color:var(--accent)}
+.phead .s{font:500 8.5px var(--mono);letter-spacing:.14em;color:var(--faint);margin-top:6px;line-height:1.7}
+.pclose{width:31px;height:31px;border-radius:9px;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--muted);font-size:13px;cursor:none;transition:.22s;flex:none}
+.pclose:hover{color:var(--err);border-color:var(--err)}
+.ptabs{display:flex;gap:4px;padding:10px 14px;border-bottom:1px solid var(--line);flex:none;overflow-x:auto}
+.ptabs::-webkit-scrollbar{height:0}
+.ptab{flex:1 0 auto;min-width:66px;height:31px;padding:0 8px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--faint);font:700 8.5px var(--mono);letter-spacing:.1em;cursor:none;transition:.2s;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.ptab i{font-style:normal;opacity:.6;font-size:8px}
+.ptab:hover{color:var(--ink);border-color:var(--line2)}
+.ptab.on{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#170c00;border-color:transparent}
+.ptab.on i{opacity:.75}
+.psearch{padding:10px 14px 0;flex:none}
+.psearch input{width:100%;height:32px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.03);color:var(--ink);font:500 11px var(--mono);outline:0;cursor:none}
+.psearch input:focus{border-color:var(--cyan)}
+.pmaster{padding:12px 14px;border-bottom:1px solid var(--line);flex:none}
+.pbody{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px}
+.pbody::-webkit-scrollbar{width:7px}
+.plab{display:flex;align-items:center;gap:8px;width:100%;min-width:0;font:600 9px var(--mono);letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+.plab .nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:none;line-height:1.4}
+.plab .nm:hover{color:var(--ink)}
+.plab .vv{flex:0 0 auto;color:var(--accent);font-weight:700;font-size:10px;letter-spacing:.04em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.plab .lk{flex:0 0 auto;width:22px;height:22px;border-radius:6px;border:1px solid transparent;background:none;color:var(--faint);font-size:10px;cursor:none;display:grid;place-items:center;transition:.18s}
+.plab .lk:hover{border-color:var(--line2);color:var(--ink)}
+.plab .lk.on{color:var(--accent);border-color:var(--line2);background:rgba(255,176,32,.1)}
+.prow{margin-bottom:15px;padding-bottom:13px;border-bottom:1px dashed rgba(146,176,255,.09);min-width:0}
+.prow:last-child{border-bottom:0}
+.prow.hide{display:none}
+.prow .hint{font:500 8.5px var(--mono);letter-spacing:.04em;color:var(--faint);margin-top:7px;line-height:1.65;max-height:0;overflow:hidden;opacity:0;transition:.25s}
+.prow:hover .hint,.prow:focus-within .hint{max-height:44px;opacity:1}
+.prow input[type=range]{width:100%;height:4px;appearance:none;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;cursor:none;display:block}
+.prow input[type=range]::-webkit-slider-thumb{appearance:none;width:15px;height:15px;border-radius:50%;background:#fff;border:2px solid var(--accent);box-shadow:0 0 10px var(--glow);cursor:none}
+.prow input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:none}
+.prow select{width:100%;height:33px;padding:0 10px;border:1px solid var(--line2);border-radius:9px;background:rgba(255,255,255,.05);color:var(--ink);font:600 10.5px var(--mono);cursor:none}
+.prow input[type=color]{width:100%;height:33px;padding:0;border:1px solid var(--line2);border-radius:9px;background:none;cursor:none;display:block}
+.swatches{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.sw{width:22px;height:22px;border-radius:7px;border:1px solid var(--line2);cursor:none;transition:.18s}
+.sw:hover{transform:scale(1.14)}
+.tgrow{display:flex;gap:7px}
+.tg{flex:1;height:31px;border-radius:9px;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--muted);font:700 9px var(--mono);letter-spacing:.1em;cursor:none;transition:.22s}
+.tg.on{background:var(--cyan);border-color:transparent;color:#04121a}
+.presets{display:grid;gap:9px}
+.pre{border:1px solid var(--line);border-radius:13px;padding:13px;background:rgba(255,255,255,.025);cursor:none;transition:.24s var(--spring);display:flex;align-items:center;gap:12px;min-width:0}
+.pre:hover{border-color:var(--accent);transform:translateX(3px)}
+.pre .cols{display:flex;gap:3px;flex:none}
+.pre .cols i{width:11px;height:26px;border-radius:4px;display:block}
+.pre .txt{flex:1;min-width:0}
+.pre .txt b{display:block;font:700 12px var(--disp);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pre .txt span{font:500 8.5px var(--mono);letter-spacing:.1em;color:var(--faint)}
+.pre .del{width:24px;height:24px;border-radius:7px;border:1px solid var(--line2);background:none;color:var(--faint);font-size:10px;cursor:none;flex:none}
+.pre .del:hover{color:var(--err);border-color:var(--err)}
+.psub{font:700 8.5px var(--mono);letter-spacing:.22em;color:var(--cyan);margin:4px 0 10px;padding-bottom:7px;border-bottom:1px dashed var(--line)}
+.pfoot{flex:none;border-top:1px solid var(--line);padding:11px 14px 14px;background:rgba(5,8,17,.6)}
+.ptele{display:flex;gap:12px;flex-wrap:wrap;font:500 8.5px var(--mono);letter-spacing:.12em;color:var(--faint);margin-bottom:10px}
+.ptele b{color:var(--accent);font-weight:600}
+.pacts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.db{height:33px;border-radius:9px;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--muted);font:700 8.5px var(--mono);letter-spacing:.08em;cursor:none;transition:.22s var(--spring);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px}
+.db:hover{background:var(--accent);border-color:transparent;color:#170c00;transform:translateY(-2px)}
+.db.wide{grid-column:1/-1}
+.db:disabled{opacity:.35;pointer-events:none}
+body.galaxy #page,body.galaxy #mini,body.galaxy #toTop,body.galaxy #bulkBar,body.galaxy .ticker{display:none}
+#galUI{position:fixed;inset:0;z-index:200;pointer-events:none;display:none}
+body.galaxy #galUI{display:block}
+/* кинематографичные полосы и затемнение при подлёте */
+#galUI .bar{position:absolute;left:0;right:0;height:0;background:#04060e;z-index:4;pointer-events:none;transition:height .5s var(--ease)}
+#galUI .bar.top{top:0}
+#galUI .bar.bot{bottom:0}
+#galUI.cine .bar{height:7.5vh}
+#galUI .cinevig{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .45s var(--ease);background:radial-gradient(ellipse at 50% 50%,transparent 34%,rgba(2,4,10,.72) 100%)}
+#galUI.cine .cinevig{opacity:1}
+.gtop{position:absolute;left:20px;top:calc(var(--nav) + var(--tele) + 16px);pointer-events:auto;z-index:6}
+.gtop .t{font:700 10.5px var(--mono);letter-spacing:.3em;color:var(--cyan);margin-bottom:6px}
+.gtop .s{font:500 9.5px var(--mono);letter-spacing:.15em;color:var(--faint);line-height:1.9}
+#labels{position:absolute;inset:0;z-index:3}
+#labels .lab{position:absolute;transform:translate(-50%,-50%);padding:4px 10px;border-radius:99px;border:1px solid var(--line2);background:rgba(6,10,22,.82);font:600 10.5px var(--disp);letter-spacing:.02em;color:var(--ink);white-space:nowrap;pointer-events:auto;cursor:none;transition:border-color .2s,color .2s,opacity .3s;backdrop-filter:blur(4px);display:block;width:auto;margin:0}
+#labels .lab:hover,#labels .lab.hot{border-color:var(--lc);color:var(--lc)}
+#target{position:absolute;right:20px;top:calc(var(--nav) + var(--tele) + 16px);width:306px;pointer-events:auto;z-index:6;border:1px solid var(--line2);border-radius:18px;background:linear-gradient(170deg,rgba(15,23,42,.98),rgba(7,11,22,.99));padding:18px;opacity:0;transform:translateX(24px) scale(.96);transition:.42s var(--spring);box-shadow:0 30px 70px -30px #000}
+#target.on{opacity:1;transform:none}
+#target .k{font:700 8.5px var(--mono);letter-spacing:.22em;color:var(--tc,var(--accent));margin-bottom:9px;display:flex;align-items:center;gap:8px}
+#target .k img{width:15px;height:15px}
+#target h3{font:700 22px var(--disp);margin-bottom:5px}
+#target .d{font:500 10px var(--mono);color:var(--faint);margin-bottom:11px}
+#target p{font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+#target .row{display:flex;gap:6px;flex-wrap:wrap}
+#target .row button{flex:1;min-width:80px;height:36px;border-radius:10px;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--ink);font:700 9px var(--mono);letter-spacing:.1em;cursor:none;transition:.24s var(--spring)}
+#target .row button.p{background:linear-gradient(120deg,var(--tc,var(--accent)),var(--accent2));color:#170c00;border-color:transparent}
+#target .row button:hover{transform:translateY(-2px)}
+.ghint{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:6;padding:9px 18px;border-radius:99px;border:1px solid var(--line);background:rgba(6,10,22,.82);font:500 9px var(--mono);letter-spacing:.2em;color:var(--faint);white-space:nowrap;transition:opacity .35s}
+#galUI.cine .ghint{opacity:0}
+#approachHud{position:absolute;left:50%;top:calc(var(--nav) + var(--tele) + 26px);transform:translateX(-50%);text-align:center;z-index:6;opacity:0;transition:opacity .3s;pointer-events:none}
+#approachHud.on{opacity:1}
+#approachHud .n{font:700 clamp(22px,3.8vw,38px) var(--disp);letter-spacing:.01em;text-shadow:0 0 34px var(--ac,var(--cyan))}
+#approachHud .m{width:200px;height:2px;background:rgba(255,255,255,.14);margin:12px auto 0;overflow:hidden}
+#approachHud .m i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac,var(--cyan)),#fff)}
+#reticle{position:fixed;z-index:4400;pointer-events:none;opacity:0;transition:opacity .22s}
+#reticle.on{opacity:1}
+#reticle .br{position:absolute;width:24px;height:24px;border:2px solid var(--wc,var(--accent));transition:transform .35s var(--ease);filter:drop-shadow(0 0 8px var(--wc,var(--accent)))}
+#reticle .tl{left:-5px;top:-5px;border-right:0;border-bottom:0;transform:translate(-13px,-13px)}
+#reticle .tr{right:-5px;top:-5px;border-left:0;border-bottom:0;transform:translate(13px,-13px)}
+#reticle .bl{left:-5px;bottom:-5px;border-right:0;border-top:0;transform:translate(-13px,13px)}
+#reticle .brr{right:-5px;bottom:-5px;border-left:0;border-top:0;transform:translate(13px,13px)}
+#reticle.on .br{transform:none}
+#reticle .scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--wc,var(--accent)),transparent);box-shadow:0 0 14px var(--wc,var(--accent));animation:rscan .7s linear infinite}
+@keyframes rscan{0%{top:0;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:100%;opacity:0}}
+#reticle .tg{position:absolute;left:0;top:-25px;font:700 8.5px var(--mono);letter-spacing:.24em;color:var(--wc,var(--accent));white-space:nowrap}
+#warp{position:fixed;inset:0;z-index:4500;pointer-events:none;opacity:0;visibility:hidden}
+#warp.on{opacity:1;visibility:visible}
+#warp .veil{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,transparent 8%,rgba(3,5,13,.42) 46%,rgba(2,3,9,.9) 100%);opacity:0;transition:opacity .4s}
+#warp.p-cruise .veil{opacity:.5}#warp.p-approach .veil{opacity:.66}#warp.p-entry .veil{opacity:.8}
+#wcanvas{position:absolute;inset:0;width:100%;height:100%}
+#warp .flash{position:absolute;inset:0;background:radial-gradient(circle,#fff,color-mix(in srgb,var(--wc,var(--accent)) 72%,#fff) 20%,transparent 64%);opacity:0}
+#warp.p-entry .flash{animation:wflash .7s cubic-bezier(.1,.8,.2,1) forwards}
+@keyframes wflash{0%{opacity:0;transform:scale(.15)}18%{opacity:1}100%{opacity:0;transform:scale(4)}}
+#warp .shock{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid var(--wc,var(--accent));opacity:0}
+#warp.p-cruise .shock{animation:wshock 1.1s cubic-bezier(.15,.85,.25,1) forwards}
+#warp.p-cruise .shock:nth-of-type(2){animation-delay:.14s;border-color:#fff}
+#warp.p-cruise .shock:nth-of-type(3){animation-delay:.28s;border-width:1px}
+@keyframes wshock{0%{transform:scale(.1);opacity:0}14%{opacity:.85}100%{transform:scale(13);opacity:0}}
+.whud{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);text-align:center;width:min(600px,92vw);opacity:0;transition:opacity .35s}
+#warp.p-lock .whud,#warp.p-depart .whud,#warp.p-cruise .whud,#warp.p-approach .whud,#warp.p-entry .whud{opacity:1}
+.whud .ph{font:700 8.5px var(--mono);letter-spacing:.44em;color:var(--wc,var(--accent));margin-bottom:12px;text-shadow:0 0 18px var(--wc,var(--accent))}
+.whud .tgt{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px}
+.whud .tgt img{width:26px;height:26px;object-fit:contain;filter:drop-shadow(0 0 10px var(--wc,var(--accent)))}
+.whud .nm{font:700 clamp(24px,4.6vw,42px)/1 var(--disp);text-shadow:0 0 44px var(--wc,var(--accent))}
+.whud .dm{font:500 10px var(--mono);letter-spacing:.26em;color:var(--muted);margin-bottom:16px}
+.wmeter{width:min(340px,80vw);height:3px;background:rgba(255,255,255,.12);margin:0 auto 12px;overflow:hidden}
+.wmeter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--wc,var(--accent)),#fff);box-shadow:0 0 14px var(--wc,var(--accent))}
+.wtele{font:500 9px var(--mono);letter-spacing:.18em;color:var(--faint);display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+.wtele b{color:var(--wc,var(--accent));font-weight:600}
+.wtop{position:absolute;left:50%;top:calc(var(--nav) + 18px);transform:translateX(-50%);display:flex;align-items:center;gap:14px;opacity:0;transition:opacity .3s}
+#warp.p-lock .wtop,#warp.p-depart .wtop,#warp.p-cruise .wtop{opacity:1}
+.wtop .hint{font:600 8.5px var(--mono);letter-spacing:.26em;color:var(--faint)}
+#wSkip{pointer-events:auto;height:31px;padding:0 15px;border-radius:9px;border:1px solid var(--line2);background:rgba(10,15,30,.85);color:var(--muted);font:700 9px var(--mono);letter-spacing:.14em;cursor:none;transition:.22s}
+#wSkip:hover{color:var(--ink);border-color:var(--accent)}
+#mini{position:fixed;left:13px;top:50%;transform:translateY(-50%);z-index:280;display:flex;flex-direction:column;gap:11px;align-items:center}
+.mm{width:9px;height:9px;border-radius:50%;border:1px solid var(--faint);background:none;cursor:none;position:relative;transition:.28s var(--spring);padding:0}
+.mm.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px var(--glow);transform:scale(1.35)}
+.mm span{position:absolute;left:17px;top:50%;transform:translateY(-50%);padding:3px 8px;border-radius:6px;background:rgba(6,10,22,.96);border:1px solid var(--line);font:700 8px var(--mono);letter-spacing:.14em;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s}
+.mm:hover span{opacity:1}
+#toTop{position:fixed;right:16px;bottom:16px;z-index:285;width:43px;height:43px;border-radius:13px;border:1px solid var(--line2);background:rgba(12,18,35,.94);color:var(--accent);font-size:16px;cursor:none;opacity:0;visibility:hidden;transform:translateY(12px);transition:.32s var(--spring);display:grid;place-items:center}
+#toTop.on{opacity:1;visibility:visible;transform:none}
+#toTop:hover{border-color:var(--accent);box-shadow:0 12px 30px -12px var(--accent)}
+.ov{position:fixed;inset:0;z-index:3500;background:var(--scrim);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .28s;display:grid;place-items:center;padding:20px}
+.ov.on{opacity:1;pointer-events:auto}
+.panelbox{width:min(600px,100%);border:1px solid var(--line2);border-radius:20px;background:linear-gradient(170deg,rgba(16,25,45,.99),rgba(8,12,24,.99));padding:24px;transform:scale(.94) translateY(14px);transition:.42s var(--spring);max-height:88vh;overflow:auto}
+.ov.on .panelbox{transform:none}
+.panelbox.wide{width:min(820px,100%)}
+.panelbox h2{font:700 20px var(--disp);margin-bottom:6px}
+.panelbox .sub{color:var(--muted);font-size:12.5px;margin-bottom:17px;line-height:1.6}
+.fg{margin-bottom:12px}
+.fg label{display:block;font:700 8.5px var(--mono);letter-spacing:.2em;color:var(--faint);margin-bottom:6px}
+.fg input,.fg textarea,.fg select{width:100%;padding:11px 13px;border:1px solid var(--line2);border-radius:11px;background:rgba(255,255,255,.04);color:var(--ink);font-size:13.5px;outline:0;cursor:none}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--cyan)}
+.fg textarea{min-height:72px;resize:vertical;font-family:var(--body)}
+.row2{display:flex;gap:9px;margin-top:15px;flex-wrap:wrap}
+.row2 .btn{flex:1;min-width:128px}
+.box{border:1px solid var(--line);border-radius:14px;padding:15px;background:rgba(255,255,255,.025);margin-bottom:12px}
+.box h4{font:700 10.5px var(--mono);letter-spacing:.18em;color:var(--accent);margin-bottom:9px}
+.box p{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:11px}
+.kv{display:flex;justify-content:space-between;gap:12px;font:500 10.5px var(--mono);padding:5px 0;border-bottom:1px dashed var(--line)}
+.kv:last-child{border:0}
+.kv span{color:var(--faint)}.kv b{color:var(--ink);text-align:right;word-break:break-all}
+.code{width:100%;min-height:82px;padding:11px;border:1px solid var(--line2);border-radius:11px;background:rgba(0,0,0,.35);color:var(--cyan);font:500 10px var(--mono);word-break:break-all;resize:vertical;outline:0;cursor:none}
+.opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.opt{padding:8px 13px;border-radius:99px;border:1px solid var(--line2);background:none;color:var(--muted);font:600 9.5px var(--mono);letter-spacing:.1em;cursor:none;transition:.2s}
+.opt.on{background:var(--accent);border-color:transparent;color:#170c00;font-weight:700}
+.snaplist{display:grid;gap:7px;max-height:168px;overflow:auto;padding-right:4px}
+.snap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03);font:500 10.5px var(--mono)}
+.snap b{color:var(--ink)}.snap small{color:var(--faint)}
+.snap button{height:25px;padding:0 10px;border-radius:7px;border:1px solid var(--line2);background:none;color:var(--accent);font:700 8.5px var(--mono);cursor:none}
+.dhero{display:flex;gap:15px;align-items:flex-start;margin-bottom:15px}
+.dhero .di{width:58px;height:58px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--line2);display:grid;place-items:center;flex:none}
+.dhero .di img{width:31px;height:31px;object-fit:contain}
+.dhero h3{font:700 23px var(--disp);margin-bottom:5px}
+.dhero .dd{font:500 10.5px var(--mono);color:var(--dc,var(--accent));letter-spacing:.08em}
+.keylist{display:grid;gap:7px}
+.keyrow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.025);font-size:12.5px;color:var(--muted)}
+.keyrow kbd{font:700 9.5px var(--mono);letter-spacing:.1em;padding:4px 9px;border-radius:7px;border:1px solid var(--line2);background:rgba(255,255,255,.06);color:var(--accent);white-space:nowrap}
+.moblist{display:grid;gap:8px}
+.moblist button,.moblist a{height:45px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--ink);font:700 12px var(--body);cursor:none;display:flex;align-items:center;gap:10px;padding:0 16px;text-decoration:none;transition:.22s}
+.moblist button:hover,.moblist a:hover{border-color:var(--accent)}
+#term{position:fixed;inset:0;z-index:3600;background:rgba(2,5,11,.98);display:none;flex-direction:column;padding:26px 5vw;font-family:var(--mono)}
+#term.on{display:flex}
+#term::after{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(61,220,151,.045) 0 1px,transparent 1px 3px)}
+.th{display:flex;justify-content:space-between;align-items:center;color:var(--ok);font-size:10px;letter-spacing:.22em;margin-bottom:12px}
+.th button{background:none;border:1px solid rgba(61,220,151,.4);color:var(--ok);border-radius:8px;padding:5px 11px;font:700 9px var(--mono);cursor:none}
+#tout{flex:1;overflow:auto;color:#c6ffdf;font-size:12.5px;line-height:1.85;white-space:pre-wrap}
+#tout .e{color:var(--err)}#tout .o{color:var(--ok)}#tout .d{color:#5f8570}#tout .a{color:var(--accent)}
+#thint{margin-top:9px;font-size:10.5px;color:var(--info);border-left:2px solid var(--info);padding-left:10px;min-height:18px}
+#tsug{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;min-height:26px}
+.sg{padding:5px 10px;border-radius:8px;border:1px solid rgba(61,220,151,.3);background:rgba(61,220,151,.08);color:#c6ffdf;font:600 10px var(--mono);cursor:none}
+.sg.on,.sg:hover{background:rgba(61,220,151,.24);border-color:var(--ok)}
+.tl{display:flex;gap:9px;align-items:center;margin-top:9px}
+.tl b{color:var(--accent)}
+.tl input{flex:1;background:none;border:0;outline:0;color:#eafff3;font:inherit;font-size:13.5px;caret-color:var(--ok);cursor:none}
+#pal .panelbox{padding:0;overflow:hidden;width:min(620px,100%)}
+#pal input{width:100%;padding:17px 21px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);font-size:15px;outline:0;cursor:none}
+#plist{max-height:330px;overflow:auto;padding:8px}
+.pi{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-radius:10px;color:var(--muted);font-size:13.5px;cursor:none}
+.pi.on{background:rgba(255,176,32,.14);color:var(--ink)}
+.pi small{font:600 9px var(--mono);letter-spacing:.1em;color:var(--faint)}
+#toasts{position:fixed;right:16px;bottom:70px;z-index:4200;display:flex;flex-direction:column;gap:9px;max-width:min(360px,calc(100vw - 32px))}
+.toast{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);border-left:3px solid var(--accent);background:rgba(13,20,37,.98);font-size:12.5px;box-shadow:0 18px 40px -18px #000;animation:tIn .4s var(--spring)}
+.toast.ok{border-left-color:var(--ok)}.toast.err{border-left-color:var(--err)}
+.toast button{background:none;border:1px solid var(--line2);border-radius:7px;color:var(--accent);font:700 9px var(--mono);padding:4px 9px;cursor:none;flex:none}
+.toast.out{animation:tOut .3s forwards}
+@keyframes tIn{from{opacity:0;transform:translateX(60px)}}
+@keyframes tOut{to{opacity:0;transform:translateX(60px)}}
+.dust{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:4100;box-shadow:0 0 9px currentColor}
+footer{position:relative;z-index:5;padding:56px 24px 60px;border-top:1px solid var(--line);text-align:center}
+footer .fb{font:700 clamp(40px,11vw,120px)/1 var(--disp);letter-spacing:.1em;color:transparent;-webkit-text-stroke:1px rgba(146,176,255,.28);margin-bottom:18px}
+footer .flinks{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+footer .flinks button{background:none;border:0;color:var(--muted);font:600 10.5px var(--mono);letter-spacing:.12em;cursor:none;transition:.2s}
+footer .flinks button:hover{color:var(--accent)}
+@media(max-width:1000px){.nlinks{display:none}.nright .chip:not(#storeChip):not(#galBtn):not(#addBtn):not(#panelBtn){display:none}#menuBtn{display:grid}}
+@media(max-width:900px){
+body{cursor:auto}.cursor,.dot,#trail{display:none}
+a,button,input,select,textarea,.fav,.card{cursor:auto}
+#mini{display:none}
+#target{left:12px;right:12px;width:auto;top:auto;bottom:18px}
+.gtop{display:none}
+section{padding:60px 15px}
+.ghint{bottom:auto;top:calc(var(--nav) + var(--tele) + 12px);font-size:8px;letter-spacing:.14em}
+.fav{height:auto;min-height:330px}
+#panel{width:100%!important}
+.pgrip{display:none}
+#tele{gap:12px;font-size:8px}
+#galUI.cine .bar{height:5vh}
+}
+@media(max-width:620px){.nright .chip#storeChip span:last-child{display:none}.nright .chip#addBtn{display:none}.stats{gap:20px}.hero p{font-size:14px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#arch">Перейти к архиву</a>
+<div id="boot"><div class="boot-in">
+  <div class="boot-mark" id="bootMark"></div>
+  <div class="boot-bar"><i id="bootBar"></i></div>
+  <div class="boot-row"><span>NEBULA</span><span id="bootPct">0%</span></div>
+</div></div>
+<canvas id="space"></canvas><canvas id="fx"></canvas><div class="vig"></div><div class="grain"></div>
+<canvas id="trail"></canvas><div class="cursor"><span>WARP</span></div><div class="dot"></div>
+<div id="prog"></div>
+
+<nav class="nav">
+  <a class="brand" href="#hero"><span class="orb"></span>NEB<b>ULA</b></a>
+  <ul class="nlinks">
+    <li><a href="#hero" data-s="hero"><i>00</i>Обзор</a></li>
+    <li><a href="#fav" data-s="fav"><i>01</i>Избранные <i id="navFav">(0)</i></a></li>
+    <li><a href="#arch" data-s="arch"><i>02</i>Архив <i id="navAll">(0)</i></a></li>
+    <li><a href="#sys" data-s="sys"><i>03</i>Система</a></li>
+  </ul>
+  <div class="nright">
+    <button class="chip" id="storeChip" title="Библиотека и профили"><span class="led" id="storeLed"></span><span id="storeTxt">БИБЛИОТЕКА</span></button>
+    <button class="chip" id="shareBtn" title="Поделиться">🔗 ПОДЕЛИТЬСЯ</button>
+    <button class="chip" id="palBtn" title="Палитра команд">⌘K</button>
+    <button class="ico" id="termBtn" title="Терминал">›_</button>
+    <button class="ico" id="soundBtn" title="Звук">🔊</button>
+    <button class="chip" id="panelBtn" title="Пульт управления">◈ ПУЛЬТ</button>
+    <button class="chip hot" id="galBtn" title="3D-галактика">🌌 ГАЛАКТИКА</button>
+    <button class="chip" id="addBtn" title="Добавить ссылку">+ ССЫЛКА</button>
+    <button class="ico" id="menuBtn" title="Меню">☰</button>
+  </div>
+</nav>
+
+<div id="tele">
+  <span>UTC <b id="tUtc">--:--:--</b></span><span class="sep">·</span>
+  <span>FPS <b id="tFps">60</b></span><span class="sep">·</span>
+  <span>SCROLL <b id="tScroll">0%</b></span>
+  <span class="push"><b id="tMode">КАТАЛОГ</b></span>
+</div>
+
+<div id="page">
+  <section class="hero" id="hero">
+    <h1 id="heroTitle">NEBULA</h1>
+    <p>Звёздная карта ссылок. Клик по карточке — захват цели, полёт сквозь космос и вход в атмосферу планеты-сайта.</p>
+    <div class="cta"><button class="btn p" id="heroGal">🌌 Войти в галактику</button><button class="btn" id="heroPanel">◈ Пульт управления</button><a class="btn" href="#arch">Открыть архив</a><button class="btn" id="heroKeys">⌨ Клавиши</button></div>
+    <div class="stats"><div class="st"><b id="stL">0</b><span>ЗВЁЗД</span></div><div class="st"><b id="stF">0</b><span>ИЗБРАННЫХ</span></div><div class="st"><b id="stJ">0</b><span>ПРЫЖКОВ</span></div><div class="st"><b id="stS">—</b><span>ХРАНИЛИЩЕ</span></div></div>
+  </section>
+
+  <div class="ticker"><div class="ticker-in" id="ticker"></div></div>
+
+  <section id="fav"><div class="wrap">
+    <div class="sechead rv"><div class="l"><span class="num">01</span><h2>Избранные</h2><p>Ключевые маршруты всегда перед глазами — аккуратной сеткой, без горизонтальной прокрутки.</p></div>
+      <div class="r"><span class="pill">В ИЗБРАННОМ <b id="favCount">0</b></span></div></div>
+    <div class="favgrid" id="favGrid"></div>
+    <div class="favmore"><button class="btn s" id="favMore">ПОКАЗАТЬ ВСЕ</button></div>
+  </div></section>
+
+  <section id="arch"><div class="wrap">
+    <div class="sechead rv"><div class="l"><span class="num">02</span><h2>Архив</h2><p>Поиск, фильтры, сортировка, выбор нескольких, перетаскивание для порядка и сохранённые виды.</p></div>
+      <div class="r"><span class="pill">НАЙДЕНО <b id="resCount">0</b></span></div></div>
+    <div class="tools">
+      <div class="search"><b>⌕</b><input id="q" placeholder="Поиск: название, домен, тег…" aria-label="Поиск"><button class="clr" id="qClear" title="Очистить">✕</button></div>
+      <select class="sel" id="sort" aria-label="Сортировка"><option value="def">ПОРЯДОК: СВОЙ</option><option value="az">ПО АЛФАВИТУ</option><option value="hit">ПО ПРЫЖКАМ</option><option value="new">СВЕЖИЕ</option></select>
+      <div class="vw"><button class="vb on" data-v="grid" title="Сетка">▦</button><button class="vb" data-v="list" title="Список">☰</button><button class="vb" data-v="deck" title="Колода">⧉</button></div>
+    </div>
+    <div class="subtools">
+      <select class="sel" id="viewSel" aria-label="Сохранённые виды"><option value="">СОХРАНЁННЫЕ ВИДЫ…</option></select>
+      <button class="btn s" id="viewSave">＋ Сохранить вид</button>
+      <button class="btn s" id="viewDel">✕ Удалить вид</button>
+      <button class="btn s" id="selBtn">☑ Выбрать</button>
+      <button class="btn s" id="resetBtn">↺ Сбросить</button>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </div></section>
+
+  <section id="sys"><div class="wrap">
+    <div class="sechead rv"><div class="l"><span class="num">03</span><h2>Система</h2><p>Подсистемы и возможности. Все параметры доступны в пульте управления и сохраняются в профиль.</p></div></div>
+    <div class="sysgrid rv">
+      <div class="spec"><div class="n">001</div><b id="spStars">0</b><span>ОБЪЕКТОВ В КАТАЛОГЕ</span></div>
+      <div class="spec"><div class="n">002</div><b id="spSectors">6</b><span>СЕКТОРОВ</span></div>
+      <div class="spec"><div class="n">003</div><b id="spParams">0</b><span>ПАРАМЕТРОВ В ПУЛЬТЕ</span></div>
+      <div class="spec"><div class="n">004</div><b id="spFps">60</b><span>КАДРОВ В СЕКУНДУ</span></div>
+    </div>
+    <div class="alist rv">
+      <div class="arow"><div class="let">A.</div><div><h4>Вояж к сайту</h4><p>Захват цели, выход на орбиту, крейсерский полёт мимо планет и туманностей, подлёт и вход в атмосферу планеты-сайта.</p></div></div>
+      <div class="arow"><div class="let">B.</div><div><h4>Кинематографичный подлёт</h4><p>Полёт по дуге с креном камеры, дыханием угла обзора, звёздным потоком и кинематографичными полосами кадра. Клик во время полёта мгновенно перенацеливает камеру.</p></div></div>
+      <div class="arow"><div class="let">C.</div><div><h4>Пульт управления</h4><p>Пять вкладок, поиск по параметрам, блокировки для рандома, отмена и повтор, пресеты, A/B-сравнение и живая телеметрия.</p></div></div>
+      <div class="arow"><div class="let">D.</div><div><h4>Библиотека и профили</h4><p>Автосохранение, снапшоты, несколько профилей, запись в файл на диске и автоэкспорт JSON.</p></div></div>
+      <div class="arow"><div class="let">E.</div><div><h4>Обмен конфигурацией</h4><p>Пакет со ссылками и настройками: ссылка, сжатый код или файл. Импорт слиянием или заменой.</p></div></div>
+    </div>
+  </div></section>
+
+  <footer>
+    <div class="fb">NEBULA</div>
+    <div class="flinks"><button id="fKeys">⌨ Клавиши</button><button id="fStore">💾 Библиотека</button><button id="fShare">🔗 Поделиться</button><button id="fPanel">◈ Пульт</button><button id="fTerm">›_ Терминал</button></div>
+  </footer>
+</div>
+
+<nav id="mini" aria-label="Навигация по разделам"></nav>
+<button id="toTop" title="Наверх">↑</button>
+
+<div id="bulkBar"><span class="n">ВЫБРАНО: <b id="bulkCount">0</b></span>
+  <button class="btn s" id="bkFav">★ В избранное</button><button class="btn s" id="bkUnfav">☆ Убрать</button>
+  <button class="btn s" id="bkExp">⬇ Экспорт</button><button class="btn s d" id="bkDel">✕ Удалить</button><button class="btn s" id="bkClear">Отмена</button></div>
+
+<div id="galUI">
+  <div class="cinevig"></div>
+  <div class="bar top"></div><div class="bar bot"></div>
+  <div class="gtop"><div class="t">ГАЛАКТИКА</div><div class="s" id="galStat">—</div></div>
+  <div id="approachHud"><div class="n" id="apName">—</div><div class="m"><i id="apMeter"></i></div></div>
+  <div id="labels"></div>
+  <div id="target"><div class="k"><img id="tgIco" alt=""><span id="tgCat">—</span></div><h3 id="tgName">—</h3><div class="d" id="tgDom">—</div><p id="tgDesc">—</p>
+    <div class="row"><button id="tgPrev">← ПРЕД</button><button id="tgNext">СЛЕД →</button><button id="tgOverview">ОБЗОР</button><button class="p" id="tgOpen">ВОЯЖ ↗</button></div></div>
+  <div class="ghint">DRAG — ОРБИТА · КОЛЕСО — ЗУМ · КЛИК ПО ЗВЕЗДЕ — ПОДЛЁТ · ESC — ВЫХОД</div>
+</div>
+
+<div id="panelScrim"></div>
+<aside id="panel" aria-label="Пульт управления">
+  <div class="pgrip" id="pGrip" title="Потяните, чтобы изменить ширину"></div>
+  <div class="phead"><div><div class="t">◈ ПУЛЬТ УПРАВЛЕНИЯ</div><div class="s">P — ОТКРЫТЬ · ESC — ЗАКРЫТЬ · 1–5 — ВКЛАДКИ · R — РАНДОМ</div></div><button class="pclose" id="panelClose" aria-label="Закрыть">✕</button></div>
+  <div class="ptabs" id="pTabs"></div>
+  <div class="psearch"><input id="pSearch" placeholder="Поиск параметра…" aria-label="Поиск параметра"></div>
+  <div class="pmaster"><div class="plab"><span class="nm">ОБЩАЯ ИНТЕНСИВНОСТЬ</span><b class="vv" id="oMaster">100%</b></div><input type="range" id="cMaster" min="0" max="150" value="100" aria-label="Общая интенсивность"></div>
+  <div class="pbody" id="pBody"></div>
+  <div class="pfoot">
+    <div class="ptele"><span>FPS <b id="pFps">60</b></span><span>STARS <b id="pStars">0</b></span><span>DPR <b id="pDpr">1.35</b></span><span>MODE <b id="pMode">КАТАЛОГ</b></span></div>
+    <div class="pacts">
+      <button class="db" id="pUndo" title="Отменить">↶ ОТМЕНА</button>
+      <button class="db" id="pRedo" title="Повторить">↷ ПОВТОР</button>
+      <button class="db" id="pAB" title="Удерживайте — сравнить с предыдущим">A/B</button>
+      <button class="db" id="pRand" title="Случайно">🎲 РАНДОМ</button>
+      <button class="db" id="pResetTab">↺ ВКЛАДКУ</button>
+      <button class="db" id="pResetAll">↺ ВСЁ</button>
+      <button class="db" id="pSavePreset">＋ ПРЕСЕТ</button>
+      <button class="db" id="pExp">⬇ ЭКСПОРТ</button>
+      <button class="db" id="pSave">💾 В ПРОФИЛЬ</button>
+    </div>
+  </div>
+</aside>
+
+<div id="reticle"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br brr"></span><span class="scan"></span><span class="tg">ЦЕЛЬ ЗАХВАЧЕНА</span></div>
+<div id="warp"><div class="veil"></div><canvas id="wcanvas"></canvas><div class="shock"></div><div class="shock"></div><div class="shock"></div><div class="flash"></div>
+  <div class="whud"><div class="ph" id="wPh">ЗАХВАТ ЦЕЛИ</div><div class="tgt"><img id="wIco" alt=""><div class="nm" id="wName">—</div></div><div class="dm" id="wDom">—</div><div class="wmeter"><i id="wMeter"></i></div>
+    <div class="wtele"><span>ДИСТАНЦИЯ <b id="wDist">—</b></span><span>СКОРОСТЬ <b id="wThr">0.00c</b></span><span>СЕКТОР <b id="wSec">—</b></span></div></div>
+  <div class="wtop"><span class="hint">ESC — ПРЕРВАТЬ</span><button id="wSkip">ПРОПУСТИТЬ ⏭</button></div></div>
+
+<div class="ov" id="modal"><div class="panelbox"><h2 id="mTitle">Новая звезда</h2><div class="sub">Запись попадёт в активный профиль и в подключённый файл.</div><form id="form">
+  <div class="fg"><label>НАЗВАНИЕ</label><input id="fName" required maxlength="42"></div>
+  <div class="fg"><label>АДРЕС</label><input id="fUrl" required placeholder="example.com"></div>
+  <div class="fg"><label>ОПИСАНИЕ</label><textarea id="fDesc" maxlength="180"></textarea></div>
+  <div class="fg"><label>ТЕГИ (через запятую)</label><input id="fTags" placeholder="код, инструменты"></div>
+  <div class="fg"><label>КАТЕГОРИЯ</label><select id="fCat"></select></div>
+  <div class="fg"><label style="display:flex;align-items:center;gap:9px;cursor:none"><input type="checkbox" id="fFav" style="width:auto;accent-color:var(--accent)"> В избранные</label></div>
+  <div class="row2"><button type="button" class="btn" id="mCancel">Отмена</button><button class="btn p" id="mSave">Сохранить</button></div></form></div></div>
+
+<div class="ov" id="detailOv"><div class="panelbox"><div class="dhero"><div class="di"><img id="dIco" alt=""></div><div><h3 id="dName">—</h3><div class="dd" id="dDom">—</div></div></div>
+  <div class="box"><p id="dDesc" style="margin:0">—</p></div>
+  <div class="box"><div class="kv"><span>Категория</span><b id="dCat">—</b></div><div class="kv"><span>Прыжков</span><b id="dHits">0</b></div><div class="kv"><span>Добавлена</span><b id="dTs">—</b></div><div class="kv"><span>Теги</span><b id="dTags">—</b></div><div class="kv"><span>Адрес</span><b id="dUrl">—</b></div></div>
+  <div class="row2"><button class="btn p" id="dGo">🚀 ВОЯЖ</button><button class="btn" id="dFav">★ Избранное</button><button class="btn" id="dCopy">⧉ Копировать</button><button class="btn" id="dEdit">✎ Изменить</button><button class="btn d" id="dDel">✕ Удалить</button><button class="btn" id="dClose">Закрыть</button></div></div></div>
+
+<div class="ov" id="storeOv"><div class="panelbox wide"><h2>💾 Библиотека</h2><div class="sub">Профили, автосохранение, снапшоты и файл на диске. Ctrl+S — сохранить сейчас.</div>
+  <div class="box"><h4>СТАТУС</h4>
+    <div class="kv"><span>Активный профиль</span><b id="sProfile">—</b></div><div class="kv"><span>Хранилище</span><b id="sMode">—</b></div>
+    <div class="kv"><span>Файл</span><b id="sFile">—</b></div><div class="kv"><span>Записей</span><b id="sCount">0</b></div>
+    <div class="kv"><span>Последнее сохранение</span><b id="sSaved">—</b></div><div class="kv"><span>Состояние</span><b id="sDirty">—</b></div>
+    <div class="row2"><button class="btn p" id="sSave">Сохранить сейчас</button><button class="btn" id="sConnect">Подключить файл</button><button class="btn" id="sOpen">Открыть файл</button><button class="btn" id="sDownload">Скачать JSON</button></div>
+    <div class="fg" style="margin-top:12px"><label style="display:flex;align-items:center;gap:9px;cursor:none"><input type="checkbox" id="sAuto" style="width:auto;accent-color:var(--accent)" checked> Автосохранение</label></div>
+    <div class="fg"><label style="display:flex;align-items:center;gap:9px;cursor:none"><input type="checkbox" id="sAutoExport" style="width:auto;accent-color:var(--accent)"> Автоэкспорт JSON при изменениях</label></div></div>
+  <div class="box"><h4>ПРОФИЛИ</h4><div class="fg"><label>АКТИВНЫЙ ПРОФИЛЬ</label><select id="pSelect"></select></div>
+    <div class="row2"><button class="btn s" id="pNew">＋ Новый</button><button class="btn s" id="pDup">Дублировать</button><button class="btn s" id="pRename">Переименовать</button><button class="btn s d" id="pDel">Удалить</button></div></div>
+  <div class="box"><h4>СНАПШОТЫ</h4><div class="snaplist" id="snapList"></div>
+    <div class="row2"><button class="btn s" id="snapNow">Создать снапшот</button><button class="btn s" id="sDisconnect">Отключить файл</button><button class="btn s d" id="sWipe">Очистить профиль</button></div></div>
+  <div class="row2"><button class="btn" id="sClose">Закрыть</button></div></div></div>
+
+<div class="ov" id="shareOv"><div class="panelbox wide"><h2>🔗 Поделиться</h2><div class="sub">Пакет: ссылки, избранное, счётчики и настройки. Импорт ссылкой, кодом или файлом.</div>
+  <div class="opts" id="shareScope"><button class="opt on" data-s="all">ВСЯ КОЛЛЕКЦИЯ</button><button class="opt" data-s="custom">ТОЛЬКО МОИ</button><button class="opt" data-s="fav">ТОЛЬКО ИЗБРАННЫЕ</button><button class="opt" data-s="sel">ВЫБРАННЫЕ</button></div>
+  <div class="opts" id="shareInc"><button class="opt on" data-i="cfg">НАСТРОЙКИ</button><button class="opt on" data-i="hits">СЧЁТЧИКИ</button></div>
+  <div class="box"><h4>ССЫЛКА</h4><p id="shareInfo">—</p><textarea class="code" id="shareLink" readonly></textarea>
+    <div class="row2"><button class="btn p" id="shCopyLink">Скопировать ссылку</button><button class="btn" id="shCopyCode">Скопировать код</button><button class="btn" id="shFile">Скачать пакет</button></div></div>
+  <div class="box"><h4>КОД</h4><textarea class="code" id="shareCode" readonly></textarea></div>
+  <div class="box"><h4>ПРИНЯТЬ ПАКЕТ</h4><textarea class="code" id="shareIn" placeholder="NEBULA1:… или https://…#share=…"></textarea>
+    <div class="row2"><button class="btn p" id="shImport">Импортировать</button><button class="btn" id="shPick">Выбрать файл</button></div></div>
+  <div class="row2"><button class="btn" id="shClose">Закрыть</button></div></div></div>
+
+<div class="ov" id="impOv"><div class="panelbox"><h2>Импорт</h2><div class="sub" id="impSub">—</div>
+  <div class="box"><div class="kv"><span>Ссылок в пакете</span><b id="impL">0</b></div><div class="kv"><span>Новых для вас</span><b id="impNew">0</b></div><div class="kv"><span>Совпадений</span><b id="impDup">0</b></div><div class="kv"><span>Настройки</span><b id="impCfg">—</b></div><div class="kv"><span>Источник</span><b id="impFrom">—</b></div></div>
+  <div class="row2"><button class="btn" id="impCancel">Отмена</button><button class="btn" id="impMerge">Добавить к моим</button><button class="btn p" id="impReplace">Заменить всё</button></div></div></div>
+
+<div class="ov" id="keysOv"><div class="panelbox"><h2>⌨ Горячие клавиши</h2><div class="sub">Всё управление доступно с клавиатуры.</div>
+  <div class="keylist">
+    <div class="keyrow"><span>Палитра команд</span><kbd>Ctrl / ⌘ + K</kbd></div>
+    <div class="keyrow"><span>Терминал</span><kbd>~</kbd></div>
+    <div class="keyrow"><span>Пульт управления</span><kbd>P</kbd></div>
+    <div class="keyrow"><span>Вкладки пульта</span><kbd>1 … 5</kbd></div>
+    <div class="keyrow"><span>Рандом / отмена / повтор</span><kbd>R · Ctrl+Z · Ctrl+Shift+Z</kbd></div>
+    <div class="keyrow"><span>3D-галактика</span><kbd>G</kbd></div>
+    <div class="keyrow"><span>Поиск в архиве</span><kbd>/</kbd></div>
+    <div class="keyrow"><span>Сохранить библиотеку</span><kbd>Ctrl / ⌘ + S</kbd></div>
+    <div class="keyrow"><span>Новая ссылка · режим выбора</span><kbd>N · V</kbd></div>
+    <div class="keyrow"><span>Эта справка</span><kbd>?</kbd></div>
+    <div class="keyrow"><span>Закрыть / отменить / выйти</span><kbd>Esc</kbd></div>
+  </div>
+  <div class="row2"><button class="btn" id="keysClose">Закрыть</button></div></div></div>
+
+<div class="ov" id="mobOv"><div class="panelbox"><h2>Меню</h2><div class="sub">Быстрый доступ ко всем разделам и инструментам.</div>
+  <div class="moblist">
+    <a href="#hero" data-mob>🏠 Обзор</a><a href="#fav" data-mob>★ Избранные</a><a href="#arch" data-mob>▦ Архив</a><a href="#sys" data-mob>⚙ Система</a>
+    <button id="mGal">🌌 Галактика</button><button id="mPanel">◈ Пульт управления</button><button id="mAdd">＋ Новая ссылка</button>
+    <button id="mStore">💾 Библиотека</button><button id="mShare">🔗 Поделиться</button><button id="mPal">⌘ Палитра команд</button>
+    <button id="mTerm">›_ Терминал</button><button id="mKeys">⌨ Горячие клавиши</button><button id="mSound">🔊 Звук</button>
+  </div>
+  <div class="row2"><button class="btn" id="mobClose">Закрыть</button></div></div></div>
+
+<div class="ov" id="confOv"><div class="panelbox"><h2 id="cfTitle">Подтверждение</h2><div class="sub" id="cfText">—</div><div class="row2"><button class="btn" id="cfNo">Отмена</button><button class="btn d" id="cfYes">Подтвердить</button></div></div></div>
+<div class="ov" id="pal"><div class="panelbox"><input id="palQ" placeholder="Команда или звезда…"><div id="plist"></div></div></div>
+<div id="term"><div class="th"><span>NEBULA SHELL</span><button id="termX">ESC ✕</button></div><div id="tout"></div><div id="thint"></div><div id="tsug"></div><div class="tl"><b>nebula:~$</b><input id="tin" autocomplete="off" spellcheck="false"></div></div>
+<div id="toasts"></div>
+<input type="file" id="filePick" accept=".json,application/json" style="display:none">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const $=i=>document.getElementById(i),RM=matchMedia('(prefers-reduced-motion:reduce)').matches,TOUCH=matchMedia('(pointer:coarse)').matches;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const domOf=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return String(u).replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0]}};
+const favIcon=d=>'https://www.google.com/s2/favicons?domain='+d+'&sz=64';
+const easeIO=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+/* кинематографичная кривая: плавный старт, мощный中段, мягкая посадка */
+const easeCine=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const CAT={dev:{n:'Разработка',c:'#38e1ff',i:'💻'},design:{n:'Дизайн',c:'#ffb020',i:'🎨'},media:{n:'Медиа',c:'#ff3d9a',i:'📺'},tools:{n:'Инструменты',c:'#3ddc97',i:'🔧'},learn:{n:'Обучение',c:'#8b5cff',i:'📚'},fun:{n:'Отдых',c:'#b6ff3d',i:'🎮'}};
+const SEED=[
+['github','GitHub','https://github.com','dev',1,'Репозитории, pull request’ы и весь открытый код планеты.','git,код'],
+['figma','Figma','https://figma.com','tools',1,'Макеты, прототипы и совместная работа над интерфейсами.','ui,команда'],
+['youtube','YouTube','https://youtube.com','media',1,'Лекции, музыка, обзоры и бесконечный видеопоток.','видео'],
+['dribbble','Dribbble','https://dribbble.com','design',1,'Витрина мирового дизайна: интерфейсы и айдентика.','вдохновение'],
+['mdn','MDN Web Docs','https://developer.mozilla.org','dev',1,'Эталонная документация по веб-технологиям.','доки'],
+['awwwards','Awwwards','https://www.awwwards.com','design',1,'Ежедневная витрина лучших сайтов и разбор решений.','референсы'],
+['so','Stack Overflow','https://stackoverflow.com','dev',0,'Ответы на вопросы программирования любой сложности.','qa'],
+['habr','Хабр','https://habr.com','dev',0,'Русскоязычное IT-сообщество и технические статьи.','статьи'],
+['codepen','CodePen','https://codepen.io','dev',0,'Песочница для фронтенд-экспериментов.','песочница'],
+['gfonts','Google Fonts','https://fonts.google.com','design',0,'Свободные шрифты с кириллицей и предпросмотром.','шрифты'],
+['coolors','Coolors','https://coolors.co','design',0,'Генератор цветовых палитр одним нажатием.','цвет'],
+['arzamas','Arzamas','https://arzamas.academy','media',0,'Курсы и подкасты об истории и культуре.','культура'],
+['kp','Кинопоиск','https://kinopoisk.ru','media',0,'Фильмы, рейтинги и рецензии.','кино'],
+['notion','Notion','https://notion.so','tools',1,'Заметки, базы и планировщик в одном месте.','заметки'],
+['deepl','DeepL','https://deepl.com','tools',0,'Переводчик, чувствующий оттенки смысла.','перевод'],
+['excalidraw','Excalidraw','https://excalidraw.com','tools',0,'Скетчевая доска для схем и идей.','схемы'],
+['stepik','Stepik','https://stepik.org','learn',0,'Курсы по программированию и наукам.','курсы'],
+['wiki','Википедия','https://ru.wikipedia.org','learn',0,'Точка отсчёта любого исследования.','энциклопедия'],
+['coursera','Coursera','https://coursera.org','learn',0,'Программы ведущих университетов мира.','университеты'],
+['lichess','Lichess','https://lichess.org','fun',0,'Шахматы без рекламы и регистрации.','шахматы'],
+['twitch','Twitch','https://twitch.tv','fun',0,'Прямые эфиры и живое общение.','стримы'],
+['pikabu','Пикабу','https://pikabu.ru','fun',0,'Истории, мемы и новости сообщества.','истории']
+].map(a=>({id:a[0],title:a[1],url:a[2],cat:a[3],fav:!!a[4],desc:a[5],tags:a[6].split(','),hits:0,ts:0,custom:false}));
+const TABS=[{k:'scene',n:'СЦЕНА',i:'01'},{k:'galaxy',n:'ГАЛАКТИКА',i:'02'},{k:'voyage',n:'ВОЯЖ',i:'03'},{k:'quality',n:'КАЧЕСТВО',i:'04'},{k:'presets',n:'ПРЕСЕТЫ',i:'05'}];
+const SCHEMA=[
+ {t:'scene',k:'glow',n:'СВЕЧЕНИЕ ЗВЁЗД',min:0,max:100,u:'%',d:'Ярность гало и ядер звёзд'},
+ {t:'scene',k:'neb',n:'ТУМАННОСТЬ',min:0,max:100,u:'%',d:'Плотность облаков в фоновом шейдере'},
+ {t:'scene',k:'dust',n:'КОСМИЧЕСКАЯ ПЫЛЬ',min:0,max:100,u:'%',d:'Количество частиц переднего плана'},
+ {t:'scene',k:'grain',n:'ЗЕРНО ПЛЁНКИ',min:0,max:20,u:'%',d:'Интенсивность шумового оверлея'},
+ {t:'scene',k:'vig',n:'ВИНЬЕТКА',min:0,max:100,u:'%',d:'Затемнение по краям кадра'},
+ {t:'scene',k:'fog',n:'ГЛУБИНА ТУМАНА',min:0,max:100,u:'%',d:'Экспоненциальный туман сцены'},
+ {t:'scene',k:'accent',n:'АКЦЕНТ',type:'color',d:'Основной цвет интерфейса и туманности'},
+ {t:'scene',k:'accent2',n:'ВТОРОЙ АКЦЕНТ',type:'color',d:'Второй цвет градиентов'},
+ {t:'scene',k:'trail',n:'СЛЕД КУРСОРА',type:'toggle',d:'Светящийся шлейф за курсором'},
+ {t:'galaxy',k:'scale',n:'РАЗМЕР ЗВЁЗД',min:40,max:200,u:'%',d:'Базовый масштаб орбов'},
+ {t:'galaxy',k:'link',n:'ПЛОТНОСТЬ СВЯЗЕЙ',min:0,max:100,u:'%',d:'Видимость линий созвездий'},
+ {t:'galaxy',k:'spin',n:'СКОРОСТЬ ОРБИТЫ',min:0,max:100,u:'%',d:'Автовращение камеры и группы'},
+ {t:'galaxy',k:'dist',n:'ДИСТАНЦИЯ КАМЕРЫ',min:45,max:180,u:'',d:'Радиус обзорной орбиты'},
+ {t:'galaxy',k:'fov',n:'УГОЛ ОБЗОРА',min:40,max:95,u:'°',d:'Поле зрения камеры галактики'},
+ {t:'galaxy',k:'approach',n:'СКОРОСТЬ ПОДЛЁТА',min:60,max:180,u:'%',d:'Темп кинематографичного манёвра к звезде'},
+ {t:'galaxy',k:'labels',n:'МЕТКИ ЗВЁЗД',type:'toggle',d:'Подписи у орбов'},
+ {t:'galaxy',k:'grid',n:'КООРДИНАТНАЯ СЕТКА',type:'toggle',d:'Кольца эклиптики'},
+ {t:'galaxy',k:'audio',n:'АУДИО-РЕАКТИВНОСТЬ',type:'toggle',d:'Пульсация звёзд в такт звуку'},
+ {t:'voyage',k:'warp',n:'ДЛИТЕЛЬНОСТЬ ПОЛЁТА',min:60,max:180,u:'%',d:'Общая длительность вояжа'},
+ {t:'voyage',k:'tunnel',n:'ЗВЁЗДЫ В ТУННЕЛЕ',min:30,max:180,u:'%',d:'Плотность звёздного коридора'},
+ {t:'voyage',k:'shake',n:'ТРЯСКА КАМЕРЫ',min:0,max:100,u:'%',d:'Амплитуда вибрации на крейсере'},
+ {t:'voyage',k:'chroma',n:'ХРОМАТИКА',min:0,max:100,u:'%',d:'Сила цветового расщепления'},
+ {t:'voyage',k:'planets',n:'ПЛАНЕТЫ НА МАРШРУТЕ',min:0,max:8,u:'',d:'Количество пролетаемых планет'},
+ {t:'quality',k:'qual',n:'RENDER QUALITY',type:'select',opts:[['1','ECO · 1.0x'],['1.35','STANDARD · 1.35x'],['2','ULTRA · 2.0x']],d:'Плотность пикселей рендера'},
+ {t:'quality',k:'motion',n:'АНИМАЦИИ ИНТЕРФЕЙСА',type:'toggle',d:'Отключите для максимальной плавности'},
+ {t:'quality',k:'ticker',n:'БЕГУЩАЯ СТРОКА',type:'toggle',d:'Тикер с названиями объектов'}
+];
+const DEF={master:100,glow:70,neb:65,dust:55,grain:5,vig:66,fog:45,accent:'#ffb020',accent2:'#ff6a3d',trail:true,
+ scale:100,link:60,spin:35,dist:100,fov:60,approach:100,labels:true,grid:false,audio:true,
+ warp:100,tunnel:100,shake:60,chroma:60,planets:4,qual:1.35,motion:true,ticker:true};
+const PRESETS=[
+ {id:'deep',n:'Deep Field',s:'Штатный космос',c:{accent:'#ffb020',accent2:'#ff6a3d',glow:70,neb:65,dust:55,grain:5,vig:66,fog:45}},
+ {id:'rose',n:'Nebula Rose',s:'Тёплая туманность',c:{accent:'#ff3d9a',accent2:'#8b5cff',glow:88,neb:92,dust:70,grain:8,vig:74,fog:62}},
+ {id:'ice',n:'Ice Station',s:'Холодный минимализм',c:{accent:'#38e1ff',accent2:'#8b5cff',glow:52,neb:34,dust:28,grain:3,vig:52,fog:28}},
+ {id:'solar',n:'Solar Flare',s:'Максимальная энергия',c:{accent:'#ff6a3d',accent2:'#ffb020',glow:100,neb:88,dust:92,grain:11,vig:80,fog:70}},
+ {id:'acid',n:'Acid Rain',s:'Кислотный контраст',c:{accent:'#b6ff3d',accent2:'#38e1ff',glow:82,neb:58,dust:64,grain:14,vig:70,fog:40}},
+ {id:'quiet',n:'Quiet Mode',s:'Тихий рабочий режим',c:{accent:'#95a4c6',accent2:'#61708f',glow:34,neb:20,dust:14,grain:2,vig:40,fog:18,master:70}}
+];
+let links=SEED.map(l=>Object.assign({},l)),cfg=Object.assign({},DEF),sound=true,view='grid',sortBy='def',filter='all',query='',editId=null,deckPos=0,detailId=null;
+let selected=new Set(),selMode=false,favExpanded=false,dragId=null;
+let W=innerWidth,H=innerHeight,mx=W/2,my=H/2,scrollN=0,fps=60;
+const IDB={db:null,ok:'indexedDB'in window,
+ open(){return new Promise(r=>{if(!this.ok)return r(false);const q=indexedDB.open('nebula-fs',1);q.onupgradeneeded=()=>q.result.createObjectStore('h');q.onsuccess=()=>{this.db=q.result;r(true)};q.onerror=()=>r(false)})},
+ async get(k){if(!this.db&&!await this.open())return null;return new Promise(r=>{try{const t=this.db.transaction('h').objectStore('h').get(k);t.onsuccess=()=>r(t.result||null);t.onerror=()=>r(null)}catch(e){r(null)}})},
+ async set(k,v){if(!this.db&&!await this.open())return;try{this.db.transaction('h','readwrite').objectStore('h').put(v,k)}catch(e){}},
+ async del(k){if(!this.db&&!await this.open())return;try{this.db.transaction('h','readwrite').objectStore('h').delete(k)}catch(e){}}};
+function makeDoc(){return{app:'NEBULA',kind:'library',version:10,updated:new Date().toISOString(),links,cfg,sound}}
+function applyDoc(d,silent){if(!d||!Array.isArray(d.links))return false;
+ links=d.links.filter(l=>l&&l.url&&l.title).map(l=>({id:l.id||'c'+Math.random().toString(36).slice(2,9),title:String(l.title).slice(0,60),url:String(l.url),cat:CAT[l.cat]?l.cat:'tools',fav:!!l.fav,desc:String(l.desc||'').slice(0,240),tags:Array.isArray(l.tags)?l.tags.slice(0,8):[],hits:+l.hits||0,ts:+l.ts||0,custom:!!l.custom}));
+ if(d.cfg)cfg=Object.assign({},DEF,d.cfg);if(typeof d.sound==='boolean')sound=d.sound;selected.clear();
+ if(!silent){renderAll();applyCfg()}return true}
+const PK='nebula_profiles_v10',AK='nebula_active_v10',SK='nebula_snaps_v10',VK='nebula_views_v10',UK='nebula_presets_v10',LK='nebula_locks_v10',PK2='nebula_panel_v10';
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let profiles=lsGet(PK,{}),activeId=lsGet(AK,'main'),snaps=lsGet(SK,{}),savedViews=lsGet(VK,[]),userPresets=lsGet(UK,[]),locks=new Set(lsGet(LK,[])),panelState=lsGet(PK2,{tab:'scene',w:392});
+const Store={mode:'browser',handle:null,dirty:false,saving:false,saved:0,name:'nebula-links.json',auto:true,autoExport:false,t:null,
+ init(){if(!profiles[activeId]){profiles[activeId]={name:'Основная',doc:makeDoc(),updated:Date.now()};lsSet(PK,profiles);lsSet(AK,activeId)}
+  applyDoc(profiles[activeId].doc,true);this.auto=lsGet('nebula_autosave',true);this.autoExport=lsGet('nebula_autoexport',false);this.ui()},
+ async initFile(){try{const h=await IDB.get('lib');if(h&&h.queryPermission){this.handle=h;this.name=h.name||this.name;const p=await h.queryPermission({mode:'readwrite'});if(p==='granted'){await this.read();this.mode='file'}else this.mode='reconnect'}}catch(e){}
+  if(this.mode==='browser'&&/^https?:$/.test(location.protocol)){try{const r=await fetch('nebula-links.json',{cache:'no-store'});if(r.ok){const d=await r.json();if(applyDoc(d,true)){this.mode='sibling';this.commit(false)}}}catch(e){}}this.ui()},
+ commit(snap){profiles[activeId].doc=makeDoc();profiles[activeId].updated=Date.now();lsSet(PK,profiles);if(snap)this.snapshot();this.dirty=true;this.ui();clearTimeout(this.t);if(this.auto)this.t=setTimeout(()=>this.saveNow(false),650)},
+ touch(){this.commit(false)},
+ async saveNow(manual){if(this.saving)return;this.saving=true;this.ui();
+  profiles[activeId].doc=makeDoc();profiles[activeId].updated=Date.now();lsSet(PK,profiles);
+  if(this.mode==='file'&&this.handle){try{const w=await this.handle.createWritable();await w.write(new Blob([JSON.stringify(makeDoc(),null,2)],{type:'application/json'}));await w.close();this.saved=Date.now();this.dirty=false;if(manual)this.snapshot()}catch(e){this.mode='error';toast('Не удалось записать файл','err')}}
+  else{this.saved=Date.now();this.dirty=false;if(manual)this.snapshot();if(this.autoExport)this.download(true)}
+  this.saving=false;this.ui();if(manual)toast('Библиотека сохранена','ok')},
+ async read(){const f=await this.handle.getFile();applyDoc(JSON.parse(await f.text()),true);this.name=f.name;this.saved=Date.now();this.dirty=false;this.mode='file';this.commit(false)},
+ async verify(h,ask){const o={mode:'readwrite'};if(await h.queryPermission(o)==='granted')return true;if(ask&&await h.requestPermission(o)==='granted')return true;return false},
+ async connect(){if(!window.showSaveFilePicker){toast('Браузер не поддерживает запись в файл — используйте экспорт','err');return}
+  try{const h=await showSaveFilePicker({suggestedName:(profiles[activeId].name||'nebula')+'-links.json',types:[{description:'NEBULA',accept:{'application/json':['.json']}}]});
+   if(!await this.verify(h,true))return toast('Нет доступа','err');this.handle=h;this.name=h.name;this.mode='file';await IDB.set('lib',h);await this.saveNow(true);toast('Файл подключён: '+h.name,'ok');this.ui();closeOv('storeOv')}catch(e){}},
+ async openFile(){if(!window.showOpenFilePicker){$('filePick').click();return}
+  try{const [h]=await showOpenFilePicker({types:[{description:'NEBULA',accept:{'application/json':['.json']}}],multiple:false});
+   if(!await this.verify(h,true))return toast('Нет доступа','err');this.handle=h;this.mode='file';await IDB.set('lib',h);await this.read();renderAll();applyCfg();toast('Загружено: '+h.name,'ok');this.ui();closeOv('storeOv')}catch(e){}},
+ async reconnect(){if(!this.handle)return;try{if(await this.verify(this.handle,true)){await this.read();renderAll();applyCfg();toast('Файл подключён','ok')}else toast('Доступ не выдан','err')}catch(e){toast('Файл недоступен','err')}this.ui()},
+ download(q){const b=new Blob([JSON.stringify(makeDoc(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(profiles[activeId].name||'nebula')+'-links.json';a.click();URL.revokeObjectURL(a.href);this.saved=Date.now();this.dirty=false;this.ui();if(!q)toast('Файл скачан','ok')},
+ async disconnect(){await IDB.del('lib');this.handle=null;this.mode='browser';this.ui();toast('Файл отключён','ok')},
+ snapshot(){const a=snaps[activeId]||[];a.unshift({ts:Date.now(),doc:makeDoc()});snaps[activeId]=a.slice(0,8);lsSet(SK,snaps);this.renderSnaps()},
+ restoreSnap(ts){const s=(snaps[activeId]||[]).find(x=>x.ts===ts);if(!s)return;applyDoc(s.doc);this.commit(true);toast('Снапшот восстановлен','ok')},
+ switchProfile(id){if(!profiles[id])return;this.snapshot();activeId=id;lsSet(AK,id);applyDoc(profiles[id].doc);this.dirty=false;this.saved=profiles[id].updated||Date.now();this.ui();toast('Профиль: '+profiles[id].name,'ok')},
+ newProfile(n){const id='p'+Date.now();profiles[id]={name:n||'Новый профиль',doc:{app:'NEBULA',kind:'library',version:10,links:[],cfg:Object.assign({},DEF),sound:true},updated:Date.now()};lsSet(PK,profiles);this.switchProfile(id)},
+ dupProfile(){const id='p'+Date.now();profiles[id]={name:profiles[activeId].name+' (копия)',doc:makeDoc(),updated:Date.now()};lsSet(PK,profiles);this.switchProfile(id)},
+ renameProfile(n){if(!n)return;profiles[activeId].name=n.slice(0,32);lsSet(PK,profiles);this.ui()},
+ delProfile(){if(Object.keys(profiles).length<=1)return toast('Нельзя удалить единственный профиль','err');delete profiles[activeId];delete snaps[activeId];lsSet(PK,profiles);lsSet(SK,snaps);activeId=Object.keys(profiles)[0];lsSet(AK,activeId);applyDoc(profiles[activeId].doc);this.ui()},
+ renderProfiles(){$('pSelect').innerHTML=Object.entries(profiles).map(([id,p])=>'<option value="'+id+'"'+(id===activeId?' selected':'')+'>'+esc(p.name)+' · '+(p.doc.links||[]).length+'</option>').join('')},
+ renderSnaps(){const a=snaps[activeId]||[];$('snapList').innerHTML=a.length?a.map(s=>'<div class="snap"><span><b>'+new Date(s.ts).toLocaleString('ru-RU')+'</b><br><small>'+(s.doc.links||[]).length+' ссылок</small></span><button data-ts="'+s.ts+'">Восстановить</button></div>').join(''):'<div class="snap"><span><b>Снапшотов нет</b><br><small>Создайте точку восстановления</small></span></div>';
+  $('snapList').querySelectorAll('button[data-ts]').forEach(b=>b.onclick=()=>this.restoreSnap(+b.dataset.ts))},
+ ui(){const p=profiles[activeId]||{name:'—'},names={file:'ФАЙЛ',sibling:'ФАЙЛ РЯДОМ',browser:'ПРОФИЛЬ',reconnect:'НУЖЕН ДОСТУП',error:'ОШИБКА'};
+  const st=this.saving?'СОХРАНЕНИЕ…':this.dirty?'ЕСТЬ ИЗМЕНЕНИЯ':this.mode==='reconnect'?'НУЖЕН ДОСТУП':'СОХРАНЕНО';
+  $('storeTxt').textContent=st;$('storeLed').className='led '+(this.saving||this.dirty?'warn':this.mode==='error'||this.mode==='reconnect'?'err':'ok');
+  $('storeChip').classList.toggle('dirty',this.dirty);$('storeChip').classList.toggle('hot',this.mode==='reconnect'||this.mode==='error');
+  $('stS').textContent=this.mode==='file'?'ФАЙЛ':this.mode==='sibling'?'РЯДОМ':'ПРОФИЛЬ';
+  $('sProfile').textContent=p.name;$('sMode').textContent=names[this.mode]||this.mode;$('sFile').textContent=this.handle?this.name:this.mode==='sibling'?'nebula-links.json':'—';
+  $('sCount').textContent=links.length;$('sSaved').textContent=this.saved?new Date(this.saved).toLocaleTimeString('ru-RU'):'—';$('sDirty').textContent=st;
+  $('sAuto').checked=this.auto;$('sAutoExport').checked=this.autoExport;$('sDisconnect').style.display=this.handle?'':'none';
+  this.renderProfiles();this.renderSnaps()}
+};
+const SH={scope:'all',inc:{cfg:true,hits:true},pending:null,
+ pick(){let L=links;if(this.scope==='custom')L=links.filter(l=>l.custom);if(this.scope==='fav')L=links.filter(l=>l.fav);if(this.scope==='sel')L=links.filter(l=>selected.has(l.id));
+  return L.map(l=>({id:l.id,title:l.title,url:l.url,cat:l.cat,fav:l.fav,desc:l.desc,tags:l.tags,hits:this.inc.hits?l.hits:0,ts:l.ts,custom:l.custom}))},
+ pkg(){return{app:'NEBULA',kind:'share',version:10,created:new Date().toISOString(),from:profiles[activeId].name,links:this.pick(),cfg:this.inc.cfg?cfg:null}},
+ async encode(o){const j=JSON.stringify(o);let b=new TextEncoder().encode(j),z=false;
+  if(window.CompressionStream){try{const cs=new CompressionStream('deflate-raw'),w=cs.writable.getWriter();w.write(b);w.close();b=new Uint8Array(await new Response(cs.readable).arrayBuffer());z=true}catch(e){}}
+  let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));
+  return 'NEBULA1:'+(z?'z':'r')+btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')},
+ async decode(code){code=String(code).trim();const m=code.match(/#share=([^&\s]+)/);if(m)code=decodeURIComponent(m[1]);
+  if(!code.startsWith('NEBULA1:'))throw new Error('Это не пакет NEBULA');
+  const body=code.slice(8),flag=body[0];let b64=body.slice(1).replace(/-/g,'+').replace(/_/g,'/');while(b64.length%4)b64+='=';
+  const bin=atob(b64),b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
+  let j;if(flag==='z'){if(!window.DecompressionStream)throw new Error('Браузер не поддерживает распаковку');const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(b);w.close();j=await new Response(ds.readable).text()}else j=new TextDecoder().decode(b);
+  const o=JSON.parse(j);if(o.app!=='NEBULA'||!Array.isArray(o.links))throw new Error('Повреждённый пакет');return o},
+ async build(){const p=this.pkg(),code=await this.encode(p),url=location.href.split('#')[0]+'#share='+encodeURIComponent(code);
+  $('shareCode').value=code;$('shareLink').value=url;$('shareInfo').textContent=p.links.length+' ссылок · код '+code.length+' символов'+(url.length>7500?' · лучше отправить файл':' · готово к отправке')},
+ file(){const b=new Blob([JSON.stringify(this.pkg(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nebula-share.json';a.click();URL.revokeObjectURL(a.href);toast('Пакет скачан','ok')},
+ preview(p){this.pending=p;const mine=new Set(links.map(l=>domOf(l.url))),nw=p.links.filter(l=>!mine.has(domOf(l.url))).length;
+  $('impL').textContent=p.links.length;$('impNew').textContent=nw;$('impDup').textContent=p.links.length-nw;$('impCfg').textContent=p.cfg?'включены':'нет';$('impFrom').textContent=p.from||'—';
+  $('impSub').textContent='Пакет от '+(p.created?new Date(p.created).toLocaleString('ru-RU'):'неизвестной даты');openOv('impOv')},
+ apply(mode){const p=this.pending;if(!p)return;if(mode==='replace'){links=[];if(p.cfg)cfg=Object.assign({},DEF,p.cfg)}
+  const have=new Set(links.map(l=>domOf(l.url)));let added=0;
+  p.links.forEach(l=>{const d=domOf(l.url);if(have.has(d)){if(mode==='merge'){const ex=links.find(x=>domOf(x.url)===d);if(ex){ex.fav=ex.fav||l.fav;ex.hits=Math.max(ex.hits,l.hits||0)}}return}
+   have.add(d);links.push({id:'s'+Date.now()+Math.random().toString(36).slice(2,6),title:String(l.title).slice(0,60),url:l.url,cat:CAT[l.cat]?l.cat:'tools',fav:!!l.fav,desc:String(l.desc||''),tags:Array.isArray(l.tags)?l.tags:[],hits:+l.hits||0,ts:+l.ts||Date.now(),custom:true});added++});
+  Store.commit(true);renderAll();applyCfg();closeOv('impOv');closeOv('shareOv');toast((mode==='replace'?'Заменено':'Добавлено')+': '+added,'ok');
+  if(location.hash.includes('#share='))history.replaceState(null,'',location.pathname+location.search)}
+};
+let ac=null,mst=null,ana=null,ad=null,energy=0,padOn=false,padT=null;
+function aInit(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();mst=ac.createGain();mst.gain.value=sound?.5:0;ana=ac.createAnalyser();ana.fftSize=128;ad=new Uint8Array(ana.frequencyBinCount);mst.connect(ana);ana.connect(ac.destination)}catch(e){}}
+function tone(f,d,t,v,sl){if(!sound)return;aInit();if(!ac)return;if(ac.state==='suspended')ac.resume();const n=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type=t||'sine';o.frequency.setValueAtTime(f,n);if(sl)o.frequency.exponentialRampToValueAtTime(sl,n+d);g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v||.07,n+.01);g.gain.exponentialRampToValueAtTime(.0008,n+d);o.connect(g);g.connect(mst);o.start(n);o.stop(n+d+.02)}
+function noise(d,v){if(!sound)return;aInit();if(!ac)return;const n=Math.floor(ac.sampleRate*d),b=ac.createBuffer(1,n,ac.sampleRate),c=b.getChannelData(0);for(let i=0;i<n;i++)c[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.2);const s=ac.createBufferSource();s.buffer=b;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=1400;const g=ac.createGain();g.gain.value=v;s.connect(f);f.connect(g);g.connect(mst);s.start()}
+function padStart(){if(padOn||!sound)return;aInit();if(!ac)return;padOn=true;const ch=[[110,164.8,220],[98,146.8,196],[87.3,130.8,174.6],[130.8,196,261.6]];let k=0;
+ const play=()=>{if(!padOn)return;const n=ac.currentTime;ch[k%4].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=680;o.type='sine';o.frequency.value=f;o.detune.value=i*6-6;g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(.05,n+2.4);g.gain.linearRampToValueAtTime(0,n+7.6);o.connect(lp);lp.connect(g);g.connect(mst);o.start(n);o.stop(n+8)});k++};play();padT=setInterval(play,7000)}
+function padStop(){padOn=false;clearInterval(padT)}
+function setSound(v){sound=v;aInit();if(mst)mst.gain.value=v?.5:0;$('soundBtn').textContent=v?'🔊':'🔇';$('soundBtn').classList.toggle('on',v);$('mSound').textContent=(v?'🔇 Выключить звук':'🔊 Включить звук');if(v){padStart();tone(660,.25,'sine',.09)}else padStop();Store.touch()}
+document.addEventListener('pointerdown',function once(){aInit();if(ac&&ac.state==='suspended')ac.resume();if(sound)padStart();document.removeEventListener('pointerdown',once)},{once:true});
+function toast(m,k,a){const t=document.createElement('div');t.className='toast '+(k||'');const s=document.createElement('span');s.style.flex='1';s.textContent=m;t.appendChild(s);
+ if(a){const b=document.createElement('button');b.textContent=a.label;b.onclick=()=>{a.fn();kill()};t.appendChild(b)}
+ $('toasts').appendChild(t);const kill=()=>{t.classList.add('out');setTimeout(()=>t.remove(),300)};setTimeout(kill,a?7000:3400)}
+function openOv(i){$(i).classList.add('on')}function closeOv(i){$(i).classList.remove('on')}
+let cfCB=null;function confirmBox(t,x,cb){$('cfTitle').textContent=t;$('cfText').textContent=x;cfCB=cb;openOv('confOv')}
+$('cfNo').onclick=()=>closeOv('confOv');$('cfYes').onclick=()=>{closeOv('confOv');cfCB&&cfCB()};
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on')}));
+function burst(x,y,n,col){if(RM||!cfg.motion)return;for(let i=0;i<n;i++){const p=document.createElement('i');p.className='dust';const a=Math.random()*6.283,v=40+Math.random()*90,c=col||[cfg.accent,cfg.accent2,'#fff'][i%3];
+ p.style.cssText='left:'+x+'px;top:'+y+'px;background:'+c+';color:'+c;document.body.appendChild(p);
+ p.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:'translate('+(Math.cos(a)*v-3)+'px,'+(Math.sin(a)*v-3)+'px) scale(.15)',opacity:0}],{duration:600+Math.random()*300,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>p.remove()}}
+const cur=document.querySelector('.cursor'),dot=document.querySelector('.dot'),tc=$('trail'),tx=tc.getContext('2d');
+let cx=mx,cy=my,pts=[],lastMove=0;
+function sizeTrail(){const d=Math.min(devicePixelRatio,1.5);tc.width=W*d;tc.height=H*d;tx.setTransform(d,0,0,d,0,0)}
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;lastMove=performance.now();dot.style.left=mx+'px';dot.style.top=my+'px';pts.push({x:mx,y:my,t:lastMove});if(pts.length>20)pts.shift()});
+(function cl(){cx+=(mx-cx)*.18;cy+=(my-cy)*.18;cur.style.left=cx+'px';cur.style.top=cy+'px';tx.clearRect(0,0,W,H);
+ if(cfg.trail&&!RM&&!TOUCH&&pts.length>1&&performance.now()-lastMove<300&&window.THREE){const n=performance.now();tx.lineCap='round';const c=new THREE.Color(cfg.accent);
+  for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],age=(n-b.t)/300;if(age>1)continue;tx.strokeStyle='rgba('+Math.round(c.r*255)+','+Math.round(c.g*255)+','+Math.round(c.b*255)+','+((1-age)*(i/pts.length)*.42)+')';tx.lineWidth=(i/pts.length)*6+1;tx.beginPath();tx.moveTo(a.x,a.y);tx.lineTo(b.x,b.y);tx.stroke()}}
+ requestAnimationFrame(cl)})();
+function bindCursor(r){(r||document).querySelectorAll('a,button,input,select,textarea,.fav,.card,#labels .lab,.tag,.pre').forEach(el=>{if(el._c)return;el._c=1;
+ el.addEventListener('mouseenter',()=>{cur.classList.add('big');if(el.matches('a,button'))tone(880,.035,'sine',.022)});el.addEventListener('mouseleave',()=>cur.classList.remove('big'))})}
+const fc=$('fx'),fx=fc.getContext('2d');let parts=[];
+function sizeFx(){const d=Math.min(devicePixelRatio,1.5);fc.width=W*d;fc.height=H*d;fx.setTransform(d,0,0,d,0,0)}
+function seedParts(){const n=RM||!cfg.motion?0:Math.round(cfg.dust*1.4*cfg.master/100);parts=[];for(let i=0;i<n;i++)parts.push({x:Math.random()*W,y:Math.random()*H,r:.7+Math.random()*2.2,vy:.15+Math.random()*.55,vx:(Math.random()-.5)*.3,s:Math.random()*6.28,c:Math.random()<.3?'a':'b'})}
+function drawParts(dt){fx.clearRect(0,0,W,H);if(!parts.length||!window.THREE)return;const ca=new THREE.Color(cfg.accent),cb=new THREE.Color(0xbecfff);
+ for(const p of parts){p.s+=dt*1.4;p.x+=(p.vx+Math.sin(p.s)*.35)*dt*60;p.y+=p.vy*dt*60;if(p.y>H+10){p.y=-10;p.x=Math.random()*W}if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;
+  const c=p.c==='a'?ca:cb;fx.fillStyle='rgba('+Math.round(c.r*255)+','+Math.round(c.g*255)+','+Math.round(c.b*255)+',.5)';fx.beginPath();fx.arc(p.x,p.y,p.r,0,6.283);fx.fill()}}
+let R,bgS,bgC,U,pgS,pgC,galS,galC,warpS,warpC,ambient=[],dustPts,galGroup,galStars=[],galLines,gridRing,ray,ptr,labels=[];
+let flightStreaks,flightGeo;const FS_N=300;
+let warpStars,warpClouds=[],warpPlanets=[],destPlanet,destHalo,destRing,destGrid;
+const G={on:false,th:.9,ph:1.15,d:900,tth:.9,tph:1.15,td:900,center:null,drag:false,px:0,py:0,moved:0,hover:null,focus:null,flight:null,tour:false,tourT:0};
+const texCache={};
+function glowTex(hex,soft){const k=hex+(soft?'s':'h');if(texCache[k])return texCache[k];const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);
+ g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(soft?.14:.26,hex);g.addColorStop(soft?.44:.58,hex+'55');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128);const t=new THREE.CanvasTexture(c);texCache[k]=t;return t}
+function cloudTex(){if(texCache.cloud)return texCache.cloud;const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+ for(let i=0;i<26;i++){const g=x.createRadialGradient(Math.random()*256,Math.random()*256,0,128,128,128);g.addColorStop(0,'rgba(255,255,255,.16)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,256,256)}
+ const t=new THREE.CanvasTexture(c);texCache.cloud=t;return t}
+function planetTex(hex){const k='pl'+hex;if(texCache[k])return texCache[k];const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext('2d');
+ const base=new THREE.Color(hex);x.fillStyle='#'+base.clone().multiplyScalar(.35).getHexString();x.fillRect(0,0,512,256);
+ for(let i=0;i<70;i++){const y=Math.random()*256,h=2+Math.random()*16,col=base.clone().lerp(new THREE.Color(0xffffff),Math.random()*.5);
+  x.fillStyle='rgba('+Math.round(col.r*255)+','+Math.round(col.g*255)+','+Math.round(col.b*255)+','+(.1+Math.random()*.35)+')';x.fillRect(0,y,512,h)}
+ for(let i=0;i<40;i++){x.fillStyle='rgba(255,255,255,'+(.03+Math.random()*.08)+')';x.beginPath();x.ellipse(Math.random()*512,Math.random()*256,10+Math.random()*60,4+Math.random()*14,0,0,6.283);x.fill()}
+ const t=new THREE.CanvasTexture(c);texCache[k]=t;return t}
+function initThree(){if(!window.THREE)return false;
+ R=new THREE.WebGLRenderer({canvas:$('space'),antialias:false,alpha:false,powerPreference:'high-performance'});R.setSize(W,H);R.setPixelRatio(Math.min(devicePixelRatio,cfg.qual));R.autoClear=false;
+ bgS=new THREE.Scene();bgC=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+ U={t:{value:0},neb:{value:.65},glow:{value:.7},audio:{value:0},scroll:{value:0},warp:{value:0},chroma:{value:.6},tint:{value:new THREE.Color(cfg.accent)},tint2:{value:new THREE.Color(cfg.accent2)},mouse:{value:new THREE.Vector2(.5,.5)}};
+ bgS.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:U,depthTest:false,depthWrite:false,vertexShader:'varying vec2 v;void main(){v=uv;gl_Position=vec4(position.xy,0.,1.);}',
+ fragmentShader:`precision highp float;varying vec2 v;uniform float t,neb,glow,audio,scroll,warp,chroma;uniform vec3 tint,tint2;uniform vec2 mouse;
+ float h(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+ float n(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z);}
+ float fbm(vec3 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*n(p);p*=2.07;a*=.5;}return s;}
+ void main(){vec2 p=(v-.5)*vec2(2.1,1.35);vec2 wd=v-.5;p-=normalize(wd+1e-5)*warp*.34;
+  float tt=t*.03+scroll*.25;float f=fbm(vec3(p*1.5,tt)),g=fbm(vec3(p*3.1+7.,tt*1.5));
+  float cloud=smoothstep(.28,.86,f*.7+g*.45);
+  vec3 col=mix(vec3(.014,.022,.05),vec3(.05,.03,.11),v.y)+tint*cloud*neb*.44;
+  col+=tint2*smoothstep(.55,1.,g)*neb*.3;col+=tint2*smoothstep(.62,1.,f)*neb*.18;
+  col+=tint*smoothstep(.42,0.,distance(v,mouse))*.07*(glow+.2);col*=1.+audio*.55;
+  float rad=length(wd),ang=atan(wd.y,wd.x);
+  float st=pow(abs(sin(ang*58.)),32.)*smoothstep(.02,.5,rad)*warp;
+  col+=mix(vec3(1.),tint,.35)*st*2.;
+  col.r+=st*chroma*.5;col.b+=st*chroma*.5;
+  col+=vec3(1.)*smoothstep(.45,0.,rad)*warp*.6;
+  gl_FragColor=vec4(col*(.55+smoothstep(1.25,.25,length(p))*.65)*(1.+warp*.4),1.);}`})));
+ pgC=new THREE.PerspectiveCamera(62,W/H,1,5000);pgC.position.set(0,0,520);pgS=new THREE.Scene();pgS.fog=new THREE.FogExp2(0x070a16,.00042);
+ const st=glowTex('#dce8ff',false);
+ [[900,1.8,.5,-1500,-520],[520,2.8,.7,-520,-130],[240,4.2,.9,-130,220]].forEach(a=>{const g=new THREE.BufferGeometry(),p=new Float32Array(a[0]*3);
+  for(let i=0;i<a[0]*3;i+=3){p[i]=(Math.random()-.5)*3000;p[i+1]=(Math.random()-.5)*1900;p[i+2]=a[3]+Math.random()*(a[4]-a[3])}
+  g.setAttribute('position',new THREE.BufferAttribute(p,3));const pts=new THREE.Points(g,new THREE.PointsMaterial({size:a[1],map:st,transparent:true,opacity:a[2],depthWrite:false,blending:THREE.AdditiveBlending}));pts.userData={o:a[2]};pgS.add(pts);ambient.push(pts)});
+ const dn=380,dg=new THREE.BufferGeometry(),dp=new Float32Array(dn*3);for(let i=0;i<dn*3;i+=3){dp[i]=(Math.random()-.5)*2200;dp[i+1]=(Math.random()-.5)*1400;dp[i+2]=-400+Math.random()*700}
+ dg.setAttribute('position',new THREE.BufferAttribute(dp,3));dustPts=new THREE.Points(dg,new THREE.PointsMaterial({size:2.4,map:st,transparent:true,opacity:.32,depthWrite:false,blending:THREE.AdditiveBlending,color:0xffc46b}));pgS.add(dustPts);
+ galC=new THREE.PerspectiveCamera(cfg.fov,W/H,1,9000);galS=new THREE.Scene();galS.fog=new THREE.FogExp2(0x070a16,.00022);
+ galGroup=new THREE.Group();galS.add(galGroup);galS.add(new THREE.AmbientLight(0xffffff,.55));
+ const k1=new THREE.PointLight(0xffb020,1.5,3600);k1.position.set(500,700,500);galS.add(k1);
+ const k2=new THREE.PointLight(0x38e1ff,1.2,3600);k2.position.set(-700,-350,-600);galS.add(k2);
+ flightGeo=new THREE.BufferGeometry();flightGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(FS_N*3),3));
+ flightStreaks=new THREE.Points(flightGeo,new THREE.PointsMaterial({size:5,map:st,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,color:0xffffff}));
+ flightStreaks.visible=false;galS.add(flightStreaks);
+ ray=new THREE.Raycaster();ptr=new THREE.Vector2();G.center=new THREE.Vector3();
+ warpC=new THREE.PerspectiveCamera(66,W/H,1,12000);warpS=new THREE.Scene();warpS.fog=new THREE.FogExp2(0x070a16,.00006);
+ buildGalaxy();return true}
+function buildGalaxy(){if(!galGroup)return;
+ const keep=flightStreaks;
+ while(galGroup.children.length){const c=galGroup.children[0];galGroup.remove(c);if(c===keep)continue;if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}
+ if(keep&&keep.parent!==galGroup)galGroup.add(keep);
+ galStars=[];labels=[];$('labels').innerHTML='';const keys=Object.keys(CAT),groups={};links.forEach(l=>{(groups[l.cat]=groups[l.cat]||[]).push(l)});const lp=[];
+ Object.entries(groups).forEach(([k,arr],gi)=>{const ang=gi/keys.length*6.283+.4,R0=340+gi*28,cx0=Math.cos(ang)*R0,cz0=Math.sin(ang)*R0,cy0=(gi%2?1:-1)*(58+gi*13),col=CAT[k].c;
+  arr.forEach((l,i)=>{const a=i*1.24,r=44+i*18,pos=new THREE.Vector3(cx0+Math.cos(a)*r,cy0+Math.sin(i*1.9)*38,cz0+Math.sin(a)*r);
+   const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(col,true),transparent:true,opacity:.55,depthWrite:false,blending:THREE.AdditiveBlending}));
+   const core=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(col,false),transparent:true,opacity:1,depthWrite:false,blending:THREE.AdditiveBlending}));
+   const base=27+Math.min(18,(l.hits||0)*2)+(l.fav?8:0);halo.scale.setScalar(base*3.1);core.scale.setScalar(base);halo.position.copy(pos);core.position.copy(pos);
+   core.userData={link:l,pos,base,halo,cat:k};galGroup.add(halo,core);galStars.push(core);
+   if(i>0){const p=galStars[galStars.length-2].userData.pos;lp.push(p.x,p.y,p.z,pos.x,pos.y,pos.z)}
+   const el=document.createElement('div');el.className='lab';el.textContent=l.title;el.style.setProperty('--lc',col);el.onclick=()=>flyToStar(core);$('labels').appendChild(el);labels.push({el,o:core});bindCursor(el)})});
+ const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.Float32BufferAttribute(lp,3));
+ galLines=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:0x8fb4ff,transparent:true,opacity:cfg.link/100*.45,blending:THREE.AdditiveBlending,depthWrite:false}));galGroup.add(galLines);
+ const rg=new THREE.BufferGeometry(),rp=[];for(let ring=1;ring<=3;ring++){const R0=250*ring;for(let i=0;i<96;i++){const a=i/96*6.283,b=(i+1)/96*6.283;rp.push(Math.cos(a)*R0,0,Math.sin(a)*R0,Math.cos(b)*R0,0,Math.sin(b)*R0)}}
+ rg.setAttribute('position',new THREE.Float32BufferAttribute(rp,3));gridRing=new THREE.LineSegments(rg,new THREE.LineBasicMaterial({color:0x38e1ff,transparent:true,opacity:.12,blending:THREE.AdditiveBlending,depthWrite:false}));gridRing.visible=cfg.grid;galGroup.add(gridRing);
+ $('galStat').innerHTML='ЗВЁЗД: '+links.length+'<br>СЕКТОРОВ: '+Object.keys(groups).length}
+function starWorld(core){return core.userData.pos.clone().applyMatrix4(galGroup.matrixWorld)}
+function syncOrbit(center){G.center.copy(center);const v=galC.position.clone().sub(center);G.d=G.td=Math.max(120,v.length());G.th=G.tth=Math.atan2(v.z,v.x);G.ph=G.tph=Math.acos(clamp(v.y/G.d,-1,1))}
+function cine(on){$('galUI').classList.toggle('cine',on)}
+function buildFlightStreaks(from,to,color){
+ const dir=to.clone().sub(from);const len=Math.max(1,dir.length());dir.normalize();
+ let up=new THREE.Vector3(0,1,0);if(Math.abs(dir.dot(up))>.95)up.set(1,0,0);
+ const right=new THREE.Vector3().crossVectors(dir,up).normalize();
+ const realUp=new THREE.Vector3().crossVectors(right,dir).normalize();
+ const arr=flightGeo.attributes.position.array;
+ for(let i=0;i<FS_N;i++){
+  const t=Math.random()*1.3-.12,a=Math.random()*6.283,r=26+Math.pow(Math.random(),.55)*170;
+  const b=from.clone().add(dir.clone().multiplyScalar(len*t))
+   .add(right.clone().multiplyScalar(Math.cos(a)*r))
+   .add(realUp.clone().multiplyScalar(Math.sin(a)*r));
+  arr[i*3]=b.x;arr[i*3+1]=b.y;arr[i*3+2]=b.z}
+ flightGeo.attributes.position.needsUpdate=true;
+ flightStreaks.material.color.set(color);flightStreaks.material.opacity=0;flightStreaks.visible=true}
+function endFlightVisuals(){flightStreaks.visible=false;flightStreaks.material.opacity=0;cine(false)}
+/* КИНЕМАТОГРАФИЧНЫЙ ПОДЛЁТ БЕЗ КОЛЕЦ */
+function flyToStar(core){if(!core)return;
+ const l=core.userData.link,c=CAT[l.cat],p=starWorld(core),from=galC.position.clone();
+ const span=from.distanceTo(p);
+ const dist=clamp(span*.24,155,235);
+ const dir=p.clone().sub(from).normalize();
+ const to=p.clone().sub(dir.clone().multiplyScalar(dist)).add(new THREE.Vector3(0,26,0));
+ const side=new THREE.Vector3(-dir.z,0,dir.x).multiplyScalar(clamp(span*.17,70,185));
+ const mid=from.clone().add(to).multiplyScalar(.5).add(new THREE.Vector3(0,clamp(span*.13,55,140),0)).add(side);
+ const dur=clamp(1.35/clamp(cfg.approach/100,.6,1.8),.62,2.1);
+ G.focus=core;G.tour=false;
+ G.flight={from,mid,to,t:0,dur,lookFrom:G.center.clone(),lookTo:p.clone(),core,shown:false};
+ buildFlightStreaks(from,to,c.c);cine(true);
+ $('approachHud').style.setProperty('--ac',c.c);$('apName').textContent=l.title;$('apMeter').style.width='0%';$('approachHud').classList.add('on');
+ $('target').classList.remove('on');labels.forEach(o=>o.el.classList.toggle('hot',o.o===core));
+ tone(150,dur*.85,'sawtooth',.06,540);tone(1450,.07,'square',.03)}
+function showTarget(core){const l=core.userData.link,c=CAT[l.cat];
+ $('target').style.setProperty('--tc',c.c);$('tgIco').src=favIcon(domOf(l.url));$('tgCat').textContent=c.n.toUpperCase();$('tgName').textContent=l.title;$('tgDom').textContent=domOf(l.url);$('tgDesc').textContent=l.desc||'Описание не задано.';
+ $('target').classList.add('on');$('approachHud').classList.remove('on');
+ tone(1240,.34,'sine',.06);tone(620,.4,'sine',.04)}
+function overview(){G.focus=null;G.tour=false;$('target').classList.remove('on');$('approachHud').classList.remove('on');labels.forEach(o=>o.el.classList.remove('hot'));
+ const from=galC.position.clone(),to=new THREE.Vector3(0,240,cfg.dist*9);
+ G.flight={from,mid:from.clone().add(to).multiplyScalar(.5).add(new THREE.Vector3(0,200,0)),to,t:0,dur:clamp(1.1/clamp(cfg.approach/100,.6,1.8),.55,1.8),lookFrom:G.center.clone(),lookTo:new THREE.Vector3(),core:null,shown:true};
+ buildFlightStreaks(from,to,cfg.accent);cine(true);
+ tone(300,.5,'sine',.05,180)}
+function setGalaxy(on){G.on=on;document.body.classList.toggle('galaxy',on);$('galBtn').innerHTML=on?'✕ ВЫЙТИ':'🌌 ГАЛАКТИКА';$('tMode').textContent=on?'ГАЛАКТИКА':'КАТАЛОГ';$('pMode').textContent=on?'ГАЛАКТИКА':'КАТАЛОГ';
+ if(on){buildGalaxy();G.center.set(0,0,0);G.td=cfg.dist*9;G.d=G.td;G.focus=null;G.flight=null;endFlightVisuals();$('target').classList.remove('on');$('approachHud').classList.remove('on');document.body.style.overflow='hidden';tone(320,.5,'sine',.07,880)}
+ else{G.tour=false;G.focus=null;G.flight=null;endFlightVisuals();$('target').classList.remove('on');$('approachHud').classList.remove('on');document.body.style.overflow='';onScroll()}applyCfg()}
+const cv=$('space');
+cv.addEventListener('pointerdown',e=>{if(!G.on||WP.busy)return;G.drag=true;G.moved=0;G.px=e.clientX;G.py=e.clientY;try{cv.setPointerCapture(e.pointerId)}catch(x){}});
+cv.addEventListener('pointermove',e=>{ptr.x=(e.clientX/W)*2-1;ptr.y=-(e.clientY/H)*2+1;if(!G.on||!G.drag)return;
+ const dx=e.clientX-G.px,dy=e.clientY-G.py;G.moved+=Math.abs(dx)+Math.abs(dy);
+ if(G.flight&&G.moved>8){G.flight=null;endFlightVisuals();$('approachHud').classList.remove('on');syncOrbit(G.focus?starWorld(G.focus):new THREE.Vector3())}
+ G.tth-=dx*.005;G.tph=clamp(G.tph-dy*.005,.28,2.8);G.px=e.clientX;G.py=e.clientY});
+cv.addEventListener('pointerup',()=>{if(!G.on){G.drag=false;return}G.drag=false;if(G.moved<6&&G.hover)flyToStar(G.hover)});
+cv.addEventListener('wheel',e=>{if(!G.on)return;e.preventDefault();if(G.flight){G.flight=null;endFlightVisuals();$('approachHud').classList.remove('on');syncOrbit(G.focus?starWorld(G.focus):new THREE.Vector3())}
+ G.td=clamp(G.td+e.deltaY*.9,G.focus?130:280,2600);if(!G.focus){cfg.dist=Math.round(G.td/9);syncPanelValues()}},{passive:false});
+const wc=$('wcanvas'),wx=wc.getContext('2d');
+const WP={busy:false,raf:0,t0:0,last:0,link:null,win:null,streaks:[],phase:'',color:'#ffb020',mul:1};
+function sizeWarp(){const d=Math.min(devicePixelRatio,1.5);wc.width=W*d;wc.height=H*d;wx.setTransform(d,0,0,d,0,0)}
+function buildVoyage(link){
+ while(warpS.children.length){const c=warpS.children[0];warpS.remove(c);if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}
+ warpClouds=[];warpPlanets=[];const col=CAT[link.cat].c;
+ const n=Math.round(1800*cfg.tunnel/100),g=new THREE.BufferGeometry(),p=new Float32Array(n*3),cl=new Float32Array(n*3),base=new THREE.Color(0xdce8ff),acc=new THREE.Color(col);
+ for(let i=0;i<n;i++){const a=Math.random()*6.283,r=40+Math.pow(Math.random(),.55)*900;p[i*3]=Math.cos(a)*r;p[i*3+1]=Math.sin(a)*r;p[i*3+2]=300-Math.random()*8200;
+  const c=Math.random()<.3?acc:base;cl[i*3]=c.r;cl[i*3+1]=c.g;cl[i*3+2]=c.b}
+ g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('color',new THREE.BufferAttribute(cl,3));
+ warpStars=new THREE.Points(g,new THREE.PointsMaterial({size:6,map:glowTex('#ffffff',false),vertexColors:true,transparent:true,opacity:.95,depthWrite:false,blending:THREE.AdditiveBlending}));warpS.add(warpStars);
+ for(let i=0;i<10;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:cloudTex(),color:new THREE.Color(i%2?col:cfg.accent2),transparent:true,opacity:.16,depthWrite:false,blending:THREE.AdditiveBlending}));
+  s.position.set((Math.random()-.5)*1400,(Math.random()-.5)*900,-500-i*760);s.scale.setScalar(1400+Math.random()*1600);warpS.add(s);warpClouds.push(s)}
+ const PN=Math.round(cfg.planets);
+ for(let i=0;i<PN;i++){const pc=['#ff6a3d','#38e1ff','#8b5cff','#b6ff3d','#ff3d9a','#ffb020','#3ddc97','#ff5d73'][i%8],m=new THREE.Mesh(new THREE.SphereGeometry(90+Math.random()*130,32,24),new THREE.MeshPhongMaterial({map:planetTex(pc),shininess:14,emissive:new THREE.Color(pc).multiplyScalar(.12)}));
+  m.position.set((i%2?1:-1)*(500+Math.random()*420),(Math.random()-.5)*520,-1200-i*(5200/Math.max(1,PN)));warpS.add(m);warpPlanets.push(m);
+  const h=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(pc,true),transparent:true,opacity:.4,depthWrite:false,blending:THREE.AdditiveBlending}));h.position.copy(m.position);h.scale.setScalar(700);warpS.add(h)}
+ const PZ=-8000;
+ destPlanet=new THREE.Mesh(new THREE.SphereGeometry(560,64,48),new THREE.MeshPhongMaterial({map:planetTex(col),shininess:26,emissive:new THREE.Color(col).multiplyScalar(.16)}));destPlanet.position.set(0,0,PZ);warpS.add(destPlanet);
+ destGrid=new THREE.Mesh(new THREE.SphereGeometry(566,28,18),new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:.09,depthWrite:false}));destGrid.position.copy(destPlanet.position);warpS.add(destGrid);
+ destHalo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(col,true),transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending}));destHalo.position.copy(destPlanet.position);destHalo.scale.setScalar(2400);warpS.add(destHalo);
+ destRing=new THREE.Mesh(new THREE.RingGeometry(760,830,128),new THREE.MeshBasicMaterial({color:new THREE.Color(col),transparent:true,opacity:.45,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));
+ destRing.position.copy(destPlanet.position);destRing.rotation.x=1.15;destRing.rotation.y=.3;warpS.add(destRing);
+ warpS.add(new THREE.AmbientLight(0xffffff,.45));
+ const dl=new THREE.DirectionalLight(0xffffff,1.5);dl.position.set(-900,600,-6200);warpS.add(dl);
+ const pl=new THREE.PointLight(new THREE.Color(col),2,4000);pl.position.set(600,300,PZ+900);warpS.add(pl);
+ warpC.position.set(0,0,420);warpC.fov=66;warpC.rotation.set(0,0,0);warpC.updateProjectionMatrix()}
+function seedStreaks(){WP.streaks=[];const n=RM?0:260;for(let i=0;i<n;i++)WP.streaks.push({a:Math.random()*6.283,r:16+Math.random()*170,sp:500+Math.random()*2600,len:6+Math.random()*46,w:.5+Math.random()*2.3,white:Math.random()<.35,al:.25+Math.random()*.75})}
+function drawStreaks(dt,k){wx.clearRect(0,0,W,H);if(k<=0)return;const e=k*k,ox=W/2,oy=H/2;wx.lineCap='round';
+ for(const s of WP.streaks){s.r+=s.sp*dt*(.2+e*3.6);const L=s.len*(.25+e*11),c=Math.cos(s.a),si=Math.sin(s.a);
+  wx.strokeStyle=s.white?'rgba(255,255,255,'+(s.al*Math.min(1,k*2.2))+')':WP.color;wx.globalAlpha=s.white?1:s.al*Math.min(1,k*2.2);wx.lineWidth=s.w*(.4+e*2.3);
+  wx.beginPath();wx.moveTo(ox+c*s.r,oy+si*s.r);wx.lineTo(ox+c*(s.r+L),oy+si*(s.r+L));wx.stroke()}wx.globalAlpha=1}
+function transitDoc(l,col){const u=JSON.stringify(l.url),t=JSON.stringify(l.title),d=JSON.stringify(domOf(l.url)),c=JSON.stringify(col);
+ return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+l.title.replace(/[<>]/g,'')+'</title><style>*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}body{background:#05070f;color:#eef2ff;font-family:ui-sans-serif,system-ui,sans-serif;display:grid;place-items:center;overflow:hidden}.pl{position:fixed;left:50%;top:50%;width:60vmin;height:60vmin;margin:-30vmin;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff8,'+col+' 42%,#05070f 78%);box-shadow:0 0 120px '+col+'88;animation:gr 1.6s cubic-bezier(.2,.8,.2,1) forwards}@keyframes gr{0%{transform:scale(.2);opacity:0}30%{opacity:1}100%{transform:scale(3.4);opacity:0}}.h{position:relative;text-align:center;z-index:2;padding:24px;animation:hh 1.6s ease forwards}@keyframes hh{0%{opacity:0;transform:translateY(14px)}20%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}h1{font-size:clamp(26px,6vw,52px);margin-bottom:10px;text-shadow:0 0 46px '+col+'}.d{font:500 11px ui-monospace,monospace;letter-spacing:.26em;color:#95a4c6;margin-bottom:22px}.b{width:min(300px,78vw);height:3px;background:rgba(255,255,255,.12);margin:0 auto 16px;overflow:hidden}.b i{display:block;height:100%;width:0;background:linear-gradient(90deg,'+col+',#fff);animation:fi 1.5s cubic-bezier(.4,0,.2,1) forwards}@keyframes fi{to{width:100%}}a{display:inline-block;margin-top:8px;padding:11px 22px;border-radius:11px;background:'+col+';color:#170c00;font:700 12px ui-monospace,monospace;letter-spacing:.14em;text-decoration:none}</style></head><body><div class="pl"></div><div class="h"><h1 id="t"></h1><div class="d" id="dm"></div><div class="b"><i></i></div><a id="go" href="#">ВОЙТИ НА САЙТ ↗</a></div><script>var U='+u+',T='+t+',D='+d+';document.getElementById("t").textContent=T;document.getElementById("dm").textContent=D.toUpperCase();var g=document.getElementById("go");g.href=U;g.onclick=function(){location.replace(U);return false};setTimeout(function(){location.replace(U)},1650);<\/script></body></html>'}
+function voyagePhase(p){if(WP.phase===p)return;WP.phase=p;const s=$('warp');s.classList.remove('p-lock','p-depart','p-cruise','p-approach','p-entry');s.classList.add('p-'+p);
+ $('wPh').textContent={lock:'ЗАХВАТ ЦЕЛИ',depart:'СТАРТ',cruise:'КРЕЙСЕРСКИЙ ПОЛЁТ',approach:'ПОДЛЁТ К ПЛАНЕТЕ',entry:'ВХОД В АТМОСФЕРУ'}[p];
+ if(p==='lock')tone(1500,.09,'square',.05);
+ if(p==='depart'){tone(70,1,'sawtooth',.09,340);document.body.classList.add('warping')}
+ if(p==='cruise'){tone(110,1.2,'sawtooth',.07,900);noise(.6,.1)}
+ if(p==='approach')tone(420,.9,'sine',.06,180);
+ if(p==='entry'){tone(60,.9,'sine',.18,28);noise(.7,.14);tone(1900,.6,'sine',.06,2800);burst(W/2,H/2,30,WP.color);$('reticle').classList.remove('on')}}
+function voyageCleanup(){cancelAnimationFrame(WP.raf);WP.raf=0;$('warp').classList.remove('on','p-lock','p-depart','p-cruise','p-approach','p-entry');$('reticle').classList.remove('on');document.body.classList.remove('warping');wx.clearRect(0,0,W,H);if(U)U.warp.value=0;WP.busy=false;WP.phase=''}
+function voyageLand(){if(!WP.busy)return;const w=WP.win,u=WP.link?WP.link.url:null;voyageCleanup();WP.win=null;WP.link=null;if(!u)return;
+ if(w&&!w.closed){try{w.location.replace(u)}catch(e){location.href=u}}else location.href=u}
+function voyageAbort(){if(!WP.busy||WP.phase==='approach'||WP.phase==='entry')return;if(WP.win&&!WP.win.closed){try{WP.win.close()}catch(e){}}voyageCleanup();WP.win=null;WP.link=null;toast('Вояж прерван')}
+function warpJump(link,card){if(!link||WP.busy)return;const col=CAT[link.cat].c;
+ if(RM||!window.THREE){window.open(link.url,'_blank','noopener');link.hits++;Store.touch();renderAll();return}
+ let win=null;try{win=window.open('','_blank')}catch(e){}
+ if(win){try{win.document.write(transitDoc(link,col));win.document.close()}catch(e){}}
+ WP.busy=true;WP.win=win;WP.link=link;WP.color=col;WP.phase='';WP.mul=cfg.warp/100;WP.t0=performance.now();WP.last=WP.t0;
+ buildVoyage(link);seedStreaks();
+ const s=$('warp');s.style.setProperty('--wc',col);s.classList.add('on');
+ $('wIco').src=favIcon(domOf(link.url));$('wName').textContent=link.title;$('wDom').textContent=domOf(link.url).toUpperCase();$('wSec').textContent=CAT[link.cat].n.toUpperCase();
+ const r=$('reticle');r.style.setProperty('--wc',col);
+ if(card){const b=card.getBoundingClientRect();r.style.cssText='left:'+b.left+'px;top:'+b.top+'px;width:'+b.width+'px;height:'+b.height+'px';r.style.setProperty('--wc',col)}
+ else{const w=Math.min(340,W-70),h=160;r.style.cssText='left:'+(W/2-w/2)+'px;top:'+(H/2-h/2)+'px;width:'+w+'px;height:'+h+'px';r.style.setProperty('--wc',col)}
+ r.classList.add('on');link.hits++;Store.touch();renderGrid();renderFavs();stats();WP.raf=requestAnimationFrame(voyageTick)}
+$('wSkip').onclick=voyageLand;
+function voyageTick(now){if(!WP.busy)return;
+ const el=(now-WP.t0)/WP.mul,dt=Math.min(.05,(now-WP.last)/1000);WP.last=now;
+ const TL=340,TD=900,TC=2300,TA=3050,TE=3600;let k=0,shake=cfg.shake/100;const PZ=-8000;
+ if(el<TL){voyagePhase('lock');k=0;warpC.position.set(0,0,420)}
+ else if(el<TD){voyagePhase('depart');const p=(el-TL)/(TD-TL),e=easeIO(p);k=e*.3;warpC.position.set(0,0,420-e*900);warpC.fov=66+e*10;warpC.rotation.z=Math.sin(p*4)*.02*shake;
+  $('wDist').textContent=Math.round(PZ*-1+warpC.position.z)+' св.ед';$('wThr').textContent=(e*.9).toFixed(2)+'c'}
+ else if(el<TC){voyagePhase('cruise');const p=(el-TD)/(TC-TD),e=Math.pow(p,.85);k=.3+p*.7;
+  warpC.position.set(Math.sin(p*7)*70*shake,Math.cos(p*5)*46*shake,-480-e*5000);warpC.fov=76+p*16;warpC.rotation.z=Math.sin(p*8)*.06*shake;
+  $('wDist').textContent=Math.max(0,Math.round(PZ*-1+warpC.position.z))+' св.ед';$('wThr').textContent=(.9+p*6.4).toFixed(2)+'c'}
+ else if(el<TA){voyagePhase('approach');const p=(el-TA)/(TA-TA),e=1-Math.pow(1-p,2.2);k=1-p*.55;
+  warpC.position.set(Math.sin(p*4)*30*shake*(1-p),Math.cos(p*3)*20*shake*(1-p),-5480-e*1560);warpC.fov=92-e*36;warpC.rotation.z=Math.sin(p*5)*.03*shake*(1-p);
+  destHalo.scale.setScalar(2400+e*2600);
+  $('wDist').textContent=Math.max(0,Math.round(PZ*-1+warpC.position.z))+' св.ед';$('wThr').textContent=(7.3-e*6.1).toFixed(2)+'c'}
+ else if(el<TE){voyagePhase('entry');const p=(el-TA)/(TE-TA);k=.45+p*.9;
+  warpC.position.set(0,0,-7040-p*760);warpC.fov=56+p*70;warpC.rotation.z=Math.sin(p*22)*.02*shake;
+  destHalo.scale.setScalar(5000+p*7000);
+  $('wDist').textContent='0 св.ед';$('wThr').textContent=(1.2+p*8).toFixed(2)+'c'}
+ else{voyageLand();return}
+ U.warp.value=clamp(k,0,1.4);$('wMeter').style.width=Math.min(100,el/TE*100)+'%';
+ drawStreaks(dt,clamp(k,0,1));warpC.updateProjectionMatrix();
+ warpPlanets.forEach((m,i)=>m.rotation.y+=dt*(.14+i*.05));
+ warpClouds.forEach((s,i)=>{s.material.opacity=.1+clamp(k,0,1)*.14;s.material.rotation+=dt*.02*(i%2?1:-1)});
+ destPlanet.rotation.y+=dt*.06;destGrid.rotation.y-=dt*.04;destRing.rotation.z+=dt*.16;
+ if(warpStars)warpStars.material.size=6+clamp(k,0,1)*26;
+ WP.raf=requestAnimationFrame(voyageTick)}
+let last=performance.now(),fAcc=0,fCnt=0;
+function loop(now){requestAnimationFrame(loop);if(!R||document.hidden)return;
+ const dt=Math.min((now-last)/1000,.05);last=now;fAcc+=dt;fCnt++;
+ if(fAcc>=.5){fps=Math.round(fCnt/fAcc);fAcc=0;fCnt=0;$('tFps').textContent=fps;$('pFps').textContent=fps;$('spFps').textContent=fps}
+ if(ana&&sound&&cfg.audio){ana.getByteFrequencyData(ad);let s=0;for(let i=0;i<20;i++)s+=ad[i];energy+=((s/20/255)-energy)*.12}else energy*=.92;
+ const M=cfg.master/100;
+ U.t.value=now/1000;U.audio.value=energy;U.scroll.value=scrollN;U.mouse.value.set(mx/W,1-my/H);U.chroma.value=cfg.chroma/100;drawParts(dt);
+ const sc=cfg.scale/100,gl=cfg.glow/100*M;
+ if(WP.busy){R.clear();R.render(bgS,bgC);R.clearDepth();R.render(warpS,warpC);return}
+ U.warp.value=0;
+ if(G.on){
+  let flightK=0;
+  if(G.flight){const f=G.flight;f.t=Math.min(1,f.t+dt/f.dur);const e=easeCine(f.t);flightK=Math.sin(f.t*Math.PI);
+   const a=f.from.clone().lerp(f.mid,e),b=f.mid.clone().lerp(f.to,e);galC.position.copy(a.lerp(b,e));
+   const shakeAmp=(1-f.t)*(1-f.t)*3.2;
+   galC.position.x+=Math.sin(now/26)*shakeAmp;galC.position.y+=Math.cos(now/31)*shakeAmp;
+   galC.lookAt(f.lookFrom.clone().lerp(f.lookTo,Math.min(1,e*1.3)));
+   galC.rotateZ(Math.sin(e*Math.PI)*.2*(1-f.t*.25));
+   galC.fov=cfg.fov+7*(1-e)-17*Math.sin(Math.min(1,e*1.05)*Math.PI);galC.updateProjectionMatrix();
+   $('apMeter').style.width=(f.t*100)+'%';
+   flightStreaks.material.opacity=flightK*.85;flightStreaks.material.size=4+flightK*20;
+   if(f.core&&!f.shown&&f.t>.68){f.shown=true;showTarget(f.core)}
+   if(f.t>=1){const core=f.core;G.flight=null;galC.fov=cfg.fov;galC.updateProjectionMatrix();galC.rotation.z=0;endFlightVisuals();
+    if(core){syncOrbit(starWorld(core));if(!f.shown)showTarget(core)}else{$('approachHud').classList.remove('on');syncOrbit(new THREE.Vector3())}}}
+  else{G.th+=(G.tth-G.th)*.14;G.ph+=(G.tph-G.ph)*.14;G.d+=(G.td-G.d)*.11;
+   if(!G.drag)G.tth+=dt*(cfg.spin/100)*(G.focus?.08:.16);
+   if(G.tour){G.tourT+=dt;if(G.tourT>3.6){G.tourT=0;flyToStar(galStars[Math.floor(Math.random()*galStars.length)])}}
+   galC.position.set(G.center.x+G.d*Math.sin(G.ph)*Math.cos(G.th),G.center.y+G.d*Math.cos(G.ph),G.center.z+G.d*Math.sin(G.ph)*Math.sin(G.th));
+   galC.lookAt(G.center);galC.fov=cfg.fov;galC.updateProjectionMatrix()}
+  U.neb.value=cfg.neb/100*M*(1+flightK*.3);
+  ray.setFromCamera(ptr,galC);const hit=ray.intersectObjects(galStars)[0];G.hover=hit?hit.object:null;
+  galStars.forEach(s=>{const isTarget=G.flight&&G.flight.core===s;const hot=s===G.hover||s===G.focus;
+   const b=s.userData.base*sc*(hot?1.6:1)*(1+energy*.35)*(isTarget?1+flightK*.55:1);
+   s.scale.setScalar(s.scale.x+(b-s.scale.x)*.22);
+   s.userData.halo.scale.setScalar(s.userData.halo.scale.x+(b*3.1*(.6+gl*.8)*(isTarget?1+flightK*.7:1)-s.userData.halo.scale.x)*.2);
+   s.userData.halo.material.opacity=(hot?.9:.5)*(.4+gl);
+   let op=1;if(G.flight&&G.flight.core&&s!==G.flight.core)op=.2+ .12*(1-flightK);
+   else if(G.focus&&!hot&&s.userData.cat!==G.focus.userData.cat)op=.3;
+   s.material.opacity=op});
+  labels.forEach(o=>{const v=o.o.userData.pos.clone().applyMatrix4(galGroup.matrixWorld).project(galC);
+   if(v.z>1){o.el.style.display='none';return}o.el.style.display=cfg.labels?'':'none';
+   const d=galC.position.distanceTo(o.o.userData.pos);let op=clamp(1.6-d/1500,.15,1);
+   if(G.flight)op*= (G.flight.core===o.o?1:.18);
+   o.el.style.opacity=String(op);
+   o.el.style.left=((v.x*.5+.5)*W)+'px';o.el.style.top=((-v.y*.5+.5)*H-30)+'px'});
+  galGroup.rotation.y+=dt*.012*(cfg.spin/100);
+  R.clear();R.render(bgS,bgC);R.clearDepth();R.render(galS,galC);return}
+ ambient.forEach((p,i)=>{p.rotation.y+=dt*.006*(i+1);p.material.opacity=p.userData.o*(.7+gl*.6)*(1+energy*.5);p.position.y=-scrollN*90*(i+1)*.4});
+ dustPts.rotation.y+=dt*.02;dustPts.position.y=-scrollN*160;dustPts.material.opacity=cfg.dust/100*.5*M;
+ pgC.position.x+=((mx/W-.5)*70-pgC.position.x)*.05;pgC.position.y+=(-(my/H-.5)*50+scrollN*40-pgC.position.y)*.05;pgC.lookAt(0,0,-200);
+ R.clear();R.render(bgS,bgC);R.clearDepth();R.render(pgS,pgC)}
+function stats(){const j=links.reduce((a,l)=>a+(l.hits||0),0),f=links.filter(l=>l.fav).length;
+ $('stL').textContent=links.length;$('stF').textContent=f;$('stJ').textContent=j;$('favCount').textContent=f;
+ $('navFav').textContent='('+f+')';$('navAll').textContent='('+links.length+')';
+ $('spStars').textContent=links.length;$('pStars').textContent=links.length;Store.ui()}
+function renderTicker(){const items=links.slice(0,16).map(l=>'<span>'+esc(l.title.toUpperCase())+' <b>·</b> '+esc(domOf(l.url))+'</span>').join('');
+ $('ticker').innerHTML=items+items;document.querySelector('.ticker').style.display=cfg.ticker?'':'none'}
+function renderFavs(){const F=links.filter(l=>l.fav),show=favExpanded?F:F.slice(0,8);
+ $('favGrid').innerHTML=show.map((l,i)=>{const c=CAT[l.cat];return '<a class="fav" href="'+esc(l.url)+'" target="_blank" rel="noopener" data-j="'+l.id+'" style="--c:'+c.c+'"><span class="num">'+String(i+1).padStart(2,'0')+'</span><span class="ic"><img src="'+favIcon(domOf(l.url))+'" alt="" onerror="this.style.visibility=\'hidden\'"><b>'+c.i+'</b></span><h3>'+esc(l.title)+'</h3><div class="dm">'+esc(domOf(l.url))+'</div><p>'+esc(l.desc)+'</p><div class="tags">'+l.tags.slice(0,3).map(t=>'<span class="tag">#'+esc(t)+'</span>').join('')+'</div><div class="go"><span>ВОЯЖ К САЙТУ</span><i>↗</i></div><button class="unfav" data-u="'+l.id+'" title="Убрать из избранного">★</button></a>'}).join('')
+ ||'<div class="empty"><b>Избранных пока нет</b><span>Отметьте звёзды ★ в архиве — они появятся здесь</span></div>';
+ $('favMore').style.display=F.length>8?'':'none';$('favMore').textContent=favExpanded?'СВЕРНУТЬ ↑':'ПОКАЗАТЬ ВСЕ ('+F.length+')';
+ $('favGrid').querySelectorAll('.fav').forEach(el=>{
+  el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect();el.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');el.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%')});
+  el.addEventListener('click',e=>{if(e.target.closest('[data-u]'))return;e.preventDefault();warpJump(links.find(x=>x.id===el.dataset.j),el)});
+  const u=el.querySelector('[data-u]');if(u)u.onclick=e=>{e.preventDefault();e.stopPropagation();const l=links.find(x=>x.id===u.dataset.u);l.fav=false;Store.touch();renderAll();toast('Убрано из избранного','',{label:'ВЕРНУТЬ',fn:()=>{l.fav=true;Store.touch();renderAll()}})}});
+ bindCursor($('favGrid'))}
+$('favMore').onclick=()=>{favExpanded=!favExpanded;renderFavs()};
+function renderFilters(){const b=$('filters'),counts={};links.forEach(l=>counts[l.cat]=(counts[l.cat]||0)+1);
+ b.innerHTML='<button class="f '+(filter==='all'?'on':'')+'" data-f="all" style="--fc:'+cfg.accent+'"><i></i>ВСЕ · '+links.length+'</button><button class="f '+(filter==='fav'?'on':'')+'" data-f="fav" style="--fc:'+cfg.accent2+'"><i></i>★ ИЗБРАННЫЕ · '+links.filter(l=>l.fav).length+'</button>'+Object.entries(CAT).map(e=>'<button class="f '+(filter===e[0]?'on':'')+'" data-f="'+e[0]+'" style="--fc:'+e[1].c+'"><i></i>'+e[1].n.toUpperCase()+' · '+(counts[e[0]]||0)+'</button>').join('');
+ b.querySelectorAll('.f').forEach(x=>x.onclick=()=>{filter=x.dataset.f;deckPos=0;tone(520,.07,'triangle',.05);renderFilters();renderGrid()});bindCursor(b)}
+function filtered(){let L=links.slice();if(query){const q=query.toLowerCase();L=L.filter(l=>(l.title+' '+domOf(l.url)+' '+l.desc+' '+l.tags.join(' ')).toLowerCase().includes(q))}
+ if(filter==='fav')L=L.filter(l=>l.fav);else if(filter!=='all')L=L.filter(l=>l.cat===filter);
+ if(sortBy==='az')L.sort((a,b)=>a.title.localeCompare(b.title,'ru'));else if(sortBy==='hit')L.sort((a,b)=>b.hits-a.hits);else if(sortBy==='new')L.sort((a,b)=>b.ts-a.ts);return L}
+function renderGrid(){const L=filtered(),g=$('grid');$('resCount').textContent=L.length;
+ if(view==='deck'){renderDeck(L);return}
+ g.className='grid'+(view==='list'?' list':'');
+ g.innerHTML=L.map(l=>{const c=CAT[l.cat],pk=selected.has(l.id);return '<article class="card'+(pk?' picked':'')+'" style="--c:'+c.c+'" data-id="'+l.id+'" draggable="'+(view==='grid'&&!selMode)+'" tabindex="0"><div class="top"><h3><img src="'+favIcon(domOf(l.url))+'" alt="" onerror="this.remove()"><span>'+esc(l.title)+'</span></h3><div class="acts">'+(view==='grid'&&!selMode?'<button class="mini grab" title="Перетащить для порядка">⠿</button>':'')+'<button class="mini pick '+(pk?'on':'')+'" data-a="pick" title="Выбрать">'+(pk?'☑':'☐')+'</button><button class="mini star '+(l.fav?'on':'')+'" data-a="fav" title="Избранное">'+(l.fav?'★':'☆')+'</button><button class="mini" data-a="info" title="Подробнее">ⓘ</button><button class="mini" data-a="edit" title="Изменить">✎</button><button class="mini del" data-a="del" title="Удалить">✕</button></div></div><div class="dm"><em></em>'+esc(domOf(l.url))+(l.hits?' · '+l.hits+' ↗':'')+'</div><p>'+esc(l.desc)+'</p><div class="tags">'+l.tags.slice(0,3).map(t=>'<span class="tag" data-t="'+esc(t)+'">#'+esc(t)+'</span>').join('')+'</div><div class="foot"><span class="cat">'+c.n+'</span><button class="open" data-j="'+l.id+'">ВОЯЖ <span>↗</span></button></div></article>'}).join('')
+ ||'<div class="empty"><b>Ничего не найдено</b><span>Измените запрос или сбросьте фильтры</span><div class="row2" style="max-width:260px;margin:16px auto 0"><button class="btn s" id="emReset">↺ Сбросить</button></div></div>';
+ const er=$('emReset');if(er)er.onclick=resetFilters;
+ g.querySelectorAll('.card').forEach(card=>{const l=links.find(x=>x.id===card.dataset.id);
+  card.querySelectorAll('[data-a]').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=b.dataset.a;
+   if(a==='pick'){togglePick(l.id);return}
+   if(a==='fav'){l.fav=!l.fav;Store.touch();tone(l.fav?1180:420,.16,'sine',.07);if(l.fav){const r=b.getBoundingClientRect();burst(r.left+13,r.top+13,10,cfg.accent)}renderGrid();renderFavs();renderFilters();stats();if(G.on)buildGalaxy()}
+   if(a==='info')openDetail(l);
+   if(a==='edit')openModal(l);
+   if(a==='del')removeLink(l)});
+  card.querySelectorAll('[data-t]').forEach(t=>t.onclick=e=>{e.stopPropagation();query=t.dataset.t;$('q').value=query;$('qClear').classList.add('on');renderGrid()});
+  const op=card.querySelector('[data-j]');if(op)op.onclick=e=>{e.stopPropagation();warpJump(l,card)};
+  card.addEventListener('click',e=>{if(e.target.closest('button,.tag'))return;if(selMode){togglePick(l.id);return}warpJump(l,card)});
+  card.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();selMode?togglePick(l.id):warpJump(l,card)}if(e.key===' '){e.preventDefault();togglePick(l.id)}});
+  card.addEventListener('dragstart',e=>{if(view!=='grid'||selMode){e.preventDefault();return}dragId=l.id;card.classList.add('dragging');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',l.id)}catch(x){}});
+  card.addEventListener('dragend',()=>{dragId=null;card.classList.remove('dragging');g.querySelectorAll('.dropat').forEach(x=>x.classList.remove('dropat'))});
+  card.addEventListener('dragover',e=>{if(!dragId||dragId===l.id)return;e.preventDefault();card.classList.add('dropat')});
+  card.addEventListener('dragleave',()=>card.classList.remove('dropat'));
+  card.addEventListener('drop',e=>{e.preventDefault();card.classList.remove('dropat');if(!dragId||dragId===l.id)return;
+   const from=links.findIndex(x=>x.id===dragId),to=links.findIndex(x=>x.id===l.id);if(from<0||to<0)return;
+   const [m]=links.splice(from,1);links.splice(to,0,m);sortBy='def';$('sort').value='def';Store.touch();renderGrid();toast('Порядок обновлён','ok')})});
+ bindCursor(g);stats();updateBulk()}
+function renderDeck(L){const g=$('grid');g.className='grid';const rest=L.slice(deckPos);
+ if(!rest.length){g.innerHTML='<div class="empty"><b>Колода разобрана</b><span>Все карточки этой выборки пройдены</span><div class="row2" style="max-width:240px;margin:16px auto 0"><button class="btn s" id="dkReset">↻ Заново</button></div></div>';$('dkReset').onclick=()=>{deckPos=0;renderGrid()};bindCursor(g);return}
+ g.innerHTML='<div style="grid-column:1/-1"><div class="deckwrap">'+rest.slice(0,3).map((l,i)=>{const c=CAT[l.cat];return '<div class="dk '+(['','l1','l2'][i])+'" data-id="'+l.id+'" style="--c:'+c.c+'"><div><div style="width:56px;height:56px;border-radius:15px;background:rgba(255,255,255,.06);border:1px solid var(--line2);display:grid;place-items:center;margin-bottom:16px"><img src="'+favIcon(domOf(l.url))+'" style="width:30px;height:30px" alt=""></div><h3 style="font:700 24px var(--disp);margin-bottom:8px">'+esc(l.title)+'</h3><div style="font:500 10.5px var(--mono);color:'+c.c+';margin-bottom:12px">'+esc(domOf(l.url))+'</div><p style="color:var(--muted);font-size:13px;line-height:1.6">'+esc(l.desc)+'</p></div><div style="display:flex;justify-content:space-between;border-top:1px dashed var(--line2);padding-top:12px"><span class="cat">'+c.n+'</span><span style="font:600 10px var(--mono);color:var(--faint)">'+(l.hits||0)+' ↗</span></div></div>'}).join('')+'</div><div class="dkctl"><button class="dkb" id="dkPass" title="Мимо">✕</button><button class="dkb" id="dkOpen" title="Вояж">↗</button><button class="dkb" id="dkFav" title="В избранное">★</button></div><div class="dkcount">В КОЛОДЕ: '+rest.length+' · ← МИМО · → ИЗБРАННОЕ · ENTER ВОЯЖ</div></div>';
+ const act=k=>{const card=g.querySelector('.dk');if(!card)return;const l=links.find(x=>x.id===card.dataset.id);
+  if(k==='open'){warpJump(l,card);return}card.classList.add(k==='fav'?'fr':'fl');
+  if(k==='fav'&&!l.fav){l.fav=true;Store.touch();toast('★ В избранном','ok');renderFavs();renderFilters();stats()}
+  setTimeout(()=>{deckPos++;renderGrid()},360)};
+ $('dkPass').onclick=()=>act('pass');$('dkFav').onclick=()=>act('fav');$('dkOpen').onclick=()=>act('open');g._deck=act;bindCursor(g)}
+function renderAll(){renderFavs();renderFilters();renderGrid();renderTicker();stats();if(G.on)buildGalaxy()}
+function removeLink(l){const i=links.indexOf(l);links.splice(i,1);selected.delete(l.id);Store.touch();renderAll();
+ toast('«'+l.title+'» удалена','',{label:'ВЕРНУТЬ',fn:()=>{links.splice(Math.min(i,links.length),0,l);Store.touch();renderAll()}})}
+function togglePick(id){selected.has(id)?selected.delete(id):selected.add(id);
+ const c=document.querySelector('.card[data-id="'+id+'"]');if(c){c.classList.toggle('picked',selected.has(id));const b=c.querySelector('[data-a="pick"]');if(b){b.classList.toggle('on',selected.has(id));b.textContent=selected.has(id)?'☑':'☐'}}
+ updateBulk()}
+function updateBulk(){$('bulkCount').textContent=selected.size;$('bulkBar').classList.toggle('on',selected.size>0)}
+function setSelMode(v){selMode=v;$('selBtn').classList.toggle('p',v);$('selBtn').textContent=v?'☑ Режим выбора':'☑ Выбрать';if(!v)selected.clear();renderGrid()}
+$('selBtn').onclick=()=>setSelMode(!selMode);
+$('bkClear').onclick=()=>{selected.clear();setSelMode(false)};
+$('bkFav').onclick=()=>{links.forEach(l=>{if(selected.has(l.id))l.fav=true});Store.touch();renderAll();toast('Добавлено в избранное: '+selected.size,'ok')};
+$('bkUnfav').onclick=()=>{links.forEach(l=>{if(selected.has(l.id))l.fav=false});Store.touch();renderAll();toast('Убрано из избранного','ok')};
+$('bkDel').onclick=()=>{const n=selected.size;confirmBox('Удалить '+n+' ссылок?','Действие можно отменить сразу после удаления.',()=>{
+ const backup=links.slice();links=links.filter(l=>!selected.has(l.id));selected.clear();Store.touch();renderAll();
+ toast('Удалено: '+n,'',{label:'ВЕРНУТЬ',fn:()=>{links=backup;Store.touch();renderAll()}})})};
+$('bkExp').onclick=()=>{const L=links.filter(l=>selected.has(l.id)),b=new Blob([JSON.stringify({app:'NEBULA',kind:'share',version:10,links:L,cfg:null},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nebula-selected.json';a.click();URL.revokeObjectURL(a.href);toast('Выбранные экспортированы','ok')};
+function renderViews(){$('viewSel').innerHTML='<option value="">СОХРАНЁННЫЕ ВИДЫ…</option>'+savedViews.map(v=>'<option value="'+v.id+'">'+esc(v.name)+'</option>').join('')}
+$('viewSel').onchange=e=>{const v=savedViews.find(x=>x.id===e.target.value);if(!v)return;filter=v.filter;sortBy=v.sort;query=v.query;$('q').value=query;$('qClear').classList.toggle('on',!!query);$('sort').value=sortBy;deckPos=0;renderFilters();renderGrid();toast('Вид: '+v.name,'ok')};
+$('viewSave').onclick=()=>{const n=prompt('Название вида','Мой вид');if(!n)return;savedViews.push({id:'v'+Date.now(),name:n.slice(0,28),filter,sort:sortBy,query});lsSet(VK,savedViews);renderViews();toast('Вид сохранён','ok')};
+$('viewDel').onclick=()=>{const id=$('viewSel').value;if(!id)return toast('Выберите вид для удаления','err');savedViews=savedViews.filter(v=>v.id!==id);lsSet(VK,savedViews);renderViews();toast('Вид удалён','ok')};
+function resetFilters(){query='';filter='all';sortBy='def';deckPos=0;$('q').value='';$('qClear').classList.remove('on');$('sort').value='def';$('viewSel').value='';renderFilters();renderGrid();toast('Фильтры сброшены','ok')}
+$('resetBtn').onclick=resetFilters;
+let qt;$('q').addEventListener('input',e=>{clearTimeout(qt);$('qClear').classList.toggle('on',!!e.target.value);qt=setTimeout(()=>{query=e.target.value;deckPos=0;renderGrid()},140)});
+$('qClear').onclick=()=>{$('q').value='';query='';$('qClear').classList.remove('on');renderGrid();$('q').focus()};
+$('sort').onchange=e=>{sortBy=e.target.value;renderGrid()};
+document.querySelectorAll('.vb').forEach(b=>b.onclick=()=>{view=b.dataset.v;deckPos=0;document.querySelectorAll('.vb').forEach(x=>x.classList.toggle('on',x===b));tone(520,.07,'triangle',.05);renderGrid()});
+function openModal(l){editId=l?l.id:null;$('mTitle').textContent=l?'Изменить звезду':'Новая звезда';
+ $('fCat').innerHTML=Object.entries(CAT).map(e=>'<option value="'+e[0]+'">'+e[1].i+' '+e[1].n+'</option>').join('');
+ $('fName').value=l?l.title:'';$('fUrl').value=l?l.url:'';$('fDesc').value=l?l.desc:'';$('fTags').value=l?l.tags.join(', '):'';$('fCat').value=l?l.cat:'dev';$('fFav').checked=l?!!l.fav:false;
+ openOv('modal');setTimeout(()=>$('fName').focus(),120);tone(520,.12,'sine',.06)}
+$('addBtn').onclick=()=>openModal(null);$('mCancel').onclick=()=>closeOv('modal');
+$('form').onsubmit=e=>{e.preventDefault();let u=$('fUrl').value.trim();if(!/^https?:\/\//i.test(u))u='https://'+u;
+ const d={title:$('fName').value.trim(),url:u,desc:$('fDesc').value.trim(),tags:$('fTags').value.split(',').map(s=>s.trim()).filter(Boolean).slice(0,8),cat:$('fCat').value,fav:$('fFav').checked};
+ if(editId){Object.assign(links.find(x=>x.id===editId),d);toast('Сохранено','ok')}
+ else{if(links.some(l=>domOf(l.url)===domOf(u)))return toast('Такой домен уже есть','err');
+  links.push(Object.assign({id:'c'+Date.now(),hits:0,ts:Date.now(),custom:true},d));toast('«'+d.title+'» добавлена','ok');
+  if(Store.mode==='browser'&&!localStorage.getItem('nebula_hint')){localStorage.setItem('nebula_hint','1');setTimeout(()=>toast('Подключите файл для автозаписи','ok',{label:'НАСТРОИТЬ',fn:openStore}),700)}}
+ Store.touch();closeOv('modal');tone(880,.22,'sine',.09);renderAll();if(detailId===editId)openDetail(links.find(x=>x.id===editId))};
+function openDetail(l){if(!l)return;detailId=l.id;const c=CAT[l.cat];
+ $('detailOv').querySelector('.panelbox').style.setProperty('--dc',c.c);
+ $('dIco').src=favIcon(domOf(l.url));$('dName').textContent=l.title;$('dDom').textContent=domOf(l.url);$('dDesc').textContent=l.desc||'Описание не задано.';
+ $('dCat').textContent=c.i+' '+c.n;$('dHits').textContent=l.hits||0;$('dTs').textContent=l.ts?new Date(l.ts).toLocaleDateString('ru-RU'):'из базового набора';
+ $('dTags').textContent=l.tags.length?l.tags.map(t=>'#'+t).join(' '):'—';$('dUrl').textContent=l.url;
+ $('dFav').textContent=l.fav?'★ Убрать из избранного':'☆ В избранное';openOv('detailOv')}
+$('dClose').onclick=()=>closeOv('detailOv');
+$('dGo').onclick=()=>{const l=links.find(x=>x.id===detailId);closeOv('detailOv');warpJump(l,null)};
+$('dFav').onclick=()=>{const l=links.find(x=>x.id===detailId);l.fav=!l.fav;Store.touch();renderAll();openDetail(l)};
+$('dEdit').onclick=()=>{const l=links.find(x=>x.id===detailId);closeOv('detailOv');openModal(l)};
+$('dDel').onclick=()=>{const l=links.find(x=>x.id===detailId);closeOv('detailOv');removeLink(l)};
+$('dCopy').onclick=()=>{const l=links.find(x=>x.id===detailId);copyText(l.url,'Адрес скопирован')};
+let panelOpen=false,pTab=panelState.tab||'scene',hist=[JSON.stringify(cfg)],hi=0,abHold=null;
+function setPanel(v){panelOpen=v;$('panel').classList.toggle('open',v);$('panelScrim').classList.toggle('open',v);$('panelBtn').classList.toggle('on',v);if(v){renderPanel();bindCursor($('panel'))}}
+$('panelBtn').onclick=()=>setPanel(!panelOpen);$('heroPanel').onclick=()=>setPanel(true);$('panelClose').onclick=()=>setPanel(false);$('panelScrim').onclick=()=>setPanel(false);
+function pushHist(){const s=JSON.stringify(cfg);if(hist[hi]===s)return;hist=hist.slice(0,hi+1);hist.push(s);if(hist.length>60)hist.shift();hi=hist.length-1;updateHistBtns()}
+function updateHistBtns(){$('pUndo').disabled=hi<=0;$('pRedo').disabled=hi>=hist.length-1}
+function undo(){if(hi<=0)return;hi--;cfg=Object.assign({},DEF,JSON.parse(hist[hi]));applyCfg();renderPanel();Store.touch();updateHistBtns();toast('Отменено')}
+function redo(){if(hi>=hist.length-1)return;hi++;cfg=Object.assign({},DEF,JSON.parse(hist[hi]));applyCfg();renderPanel();Store.touch();updateHistBtns();toast('Повторено')}
+function setCfg(k,v,silent){cfg[k]=v;applyCfg();if(!silent){pushHist();Store.touch()}syncPanelValues()}
+function renderTabs(){$('pTabs').innerHTML=TABS.map(t=>'<button class="ptab'+(t.k===pTab?' on':'')+'" data-t="'+t.k+'"><i>'+t.i+'</i>'+t.n+'</button>').join('');
+ $('pTabs').querySelectorAll('.ptab').forEach(b=>b.onclick=()=>{pTab=b.dataset.t;panelState.tab=pTab;lsSet(PK2,panelState);renderPanel()})}
+function renderPanel(){renderTabs();
+ $('pSearch').style.display=pTab==='presets'?'none':'';$('pSearch').value='';
+ if(pTab==='presets'){renderPresets();updateHistBtns();bindCursor($('pBody'));return}
+ const rows=SCHEMA.filter(s=>s.t===pTab);
+ $('pBody').innerHTML=rows.map(s=>{
+  const v=cfg[s.k];let ctl='';
+  if(s.type==='color')ctl='<input type="color" data-k="'+s.k+'" value="'+v+'"><div class="swatches">'+['#ffb020','#ff6a3d','#ff3d9a','#8b5cff','#38e1ff','#3ddc97','#b6ff3d','#95a4c6'].map(c=>'<button class="sw" data-sw="'+s.k+'" data-c="'+c+'" style="background:'+c+'" title="'+c+'"></button>').join('')+'</div>';
+  else if(s.type==='toggle')ctl='<div class="tgrow"><button class="tg'+(v?' on':'')+'" data-tg="'+s.k+'">'+(v?'ВКЛЮЧЕНО':'ВЫКЛЮЧЕНО')+'</button></div>';
+  else if(s.type==='select')ctl='<select data-k="'+s.k+'">'+s.opts.map(o=>'<option value="'+o[0]+'"'+(String(v)===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+  else ctl='<input type="range" data-k="'+s.k+'" min="'+s.min+'" max="'+s.max+'" value="'+v+'">';
+  const val=s.type==='toggle'?'':(s.type==='color'?String(v).toUpperCase():(s.type==='select'?'':v+(s.u||'')));
+  return '<div class="prow" data-row="'+s.k+'" data-name="'+esc(s.n.toLowerCase())+'"><div class="plab"><span class="nm" data-reset="'+s.k+'" title="'+esc(s.n)+' · двойной клик — сброс">'+s.n+'</span><b class="vv" data-val="'+s.k+'">'+val+'</b><button class="lk'+(locks.has(s.k)?' on':'')+'" data-lk="'+s.k+'" title="Блокировать от рандома">'+(locks.has(s.k)?'🔒':'🔓')+'</button></div>'+ctl+'<div class="hint">'+s.d+'</div></div>'}).join('');
+ wirePanel();updateHistBtns();bindCursor($('pBody'))}
+function wirePanel(){
+ $('pBody').querySelectorAll('input[data-k]').forEach(el=>{
+  const k=el.dataset.k,s=SCHEMA.find(x=>x.k===k);
+  el.addEventListener('input',()=>{let v=el.type==='range'?+el.value:(s&&s.type==='select'?+el.value:el.value);cfg[k]=v;applyCfg();syncPanelValues();Store.touch()});
+  el.addEventListener('change',()=>pushHist())});
+ $('pBody').querySelectorAll('[data-tg]').forEach(b=>b.onclick=()=>{const k=b.dataset.tg;setCfg(k,!cfg[k]);renderPanel()});
+ $('pBody').querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>setCfg(b.dataset.sw,b.dataset.c));
+ $('pBody').querySelectorAll('[data-lk]').forEach(b=>b.onclick=()=>{const k=b.dataset.lk;locks.has(k)?locks.delete(k):locks.add(k);lsSet(LK,[...locks]);renderPanel()});
+ $('pBody').querySelectorAll('[data-reset]').forEach(el=>el.ondblclick=()=>{setCfg(el.dataset.reset,DEF[el.dataset.reset]);renderPanel();toast('Параметр сброшен')})}
+function syncPanelValues(){
+ $('cMaster').value=cfg.master;$('oMaster').textContent=cfg.master+'%';
+ SCHEMA.forEach(s=>{const v=cfg[s.k];const b=$('pBody').querySelector('[data-val="'+s.k+'"]');
+  if(b)b.textContent=s.type==='toggle'?'':(s.type==='color'?String(v).toUpperCase():(s.type==='select'?'':v+(s.u||'')));
+  const inp=$('pBody').querySelector('input[data-k="'+s.k+'"],select[data-k="'+s.k+'"]');if(inp&&document.activeElement!==inp)inp.value=v})}
+function renderPresets(){
+ const all=PRESETS.concat(userPresets);
+ $('pBody').innerHTML='<div class="psub">ПРЕСЕТЫ</div><div class="presets">'+all.map(p=>{
+  const c=p.c,a=c.accent||cfg.accent,b=c.accent2||cfg.accent2;
+  return '<div class="pre" data-pre="'+p.id+'"><span class="cols"><i style="background:'+a+'"></i><i style="background:'+b+'"></i><i style="background:hsl(0,0%,'+(100-(c.vig||60))+'%)"></i></span><span class="txt"><b>'+esc(p.n)+'</b><span>'+esc(p.s||'пользовательский')+'</span></span>'+(p.user?'<button class="del" data-del="'+p.id+'" title="Удалить">✕</button>':'')+'</div>'}).join('')+'</div>'+
+ '<div class="psub" style="margin-top:16px">БЫСТРЫЕ ДЕЙСТВИЯ</div><div class="pacts"><button class="db" id="pqQuiet">ТИХИЙ РЕЖИМ</button><button class="db" id="pqMax">МАКСИМУМ</button><button class="db wide" id="pqSave">＋ СОХРАНИТЬ ТЕКУЩИЙ КАК ПРЕСЕТ</button></div>';
+ $('pBody').querySelectorAll('[data-pre]').forEach(el=>el.onclick=e=>{if(e.target.closest('[data-del]'))return;applyPreset(el.dataset.pre)});
+ $('pBody').querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();userPresets=userPresets.filter(p=>p.id!==b.dataset.del);lsSet(UK,userPresets);renderPresets();toast('Пресет удалён')});
+ $('pqQuiet').onclick=()=>applyPreset('quiet');
+ $('pqMax').onclick=()=>{setCfg('master',130,true);setCfg('glow',100,true);setCfg('neb',95,true);setCfg('dust',90);renderPanel()};
+ $('pqSave').onclick=savePreset;bindCursor($('pBody'))}
+function applyPreset(id){const p=PRESETS.concat(userPresets).find(x=>x.id===id);if(!p)return;
+ Object.assign(cfg,p.c);applyCfg();pushHist();Store.touch();renderPanel();toast('Пресет: '+p.n,'ok');tone(720,.18,'sine',.07)}
+function savePreset(){const n=prompt('Название пресета','Мой пресет');if(!n)return;
+ const c={};SCHEMA.forEach(s=>{if(s.t==='scene')c[s.k]=cfg[s.k]});c.master=cfg.master;
+ userPresets.push({id:'u'+Date.now(),n:n.slice(0,26),s:'пользовательский',c,user:true});lsSet(UK,userPresets);pTab='presets';panelState.tab=pTab;lsSet(PK2,panelState);renderPanel();toast('Пресет сохранён','ok')}
+$('pSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();
+ $('pBody').querySelectorAll('[data-row]').forEach(r=>r.classList.toggle('hide',q&&!r.dataset.name.includes(q)&&!r.dataset.row.includes(q)))});
+$('cMaster').addEventListener('input',e=>{cfg.master=+e.target.value;$('oMaster').textContent=cfg.master+'%';applyCfg();Store.touch()});
+$('cMaster').addEventListener('change',pushHist);
+$('pUndo').onclick=undo;$('pRedo').onclick=redo;
+$('pRand').onclick=()=>{const pal=['#ffb020','#38e1ff','#ff3d9a','#b6ff3d','#8b5cff','#ff6a3d','#3ddc97'];
+ SCHEMA.forEach(s=>{if(locks.has(s.k))return;
+  if(s.type==='color')cfg[s.k]=pal[Math.floor(Math.random()*pal.length)];
+  else if(s.type==='toggle')cfg[s.k]=Math.random()>.35;
+  else if(s.type==='select')cfg[s.k]=[1,1.35,2][Math.floor(Math.random()*3)];
+  else cfg[s.k]=Math.round(s.min+Math.random()*(s.max-s.min))});
+ applyCfg();pushHist();Store.touch();renderPanel();tone(760,.2,'sine',.08);toast('Случайная конфигурация','ok')};
+$('pResetTab').onclick=()=>{SCHEMA.filter(s=>s.t===pTab).forEach(s=>cfg[s.k]=DEF[s.k]);applyCfg();pushHist();Store.touch();renderPanel();toast('Вкладка сброшена','ok')};
+$('pResetAll').onclick=()=>confirmBox('Сбросить все параметры?','Все настройки пульта вернутся к значениям по умолчанию.',()=>{cfg=Object.assign({},DEF);applyCfg();pushHist();Store.touch();renderPanel();toast('Пульт сброшен','ok')});
+$('pSavePreset').onclick=savePreset;
+$('pExp').onclick=()=>{const b=new Blob([JSON.stringify({app:'NEBULA',kind:'config',cfg,presets:userPresets},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nebula-config.json';a.click();URL.revokeObjectURL(a.href);toast('Конфиг экспортирован','ok')};
+$('pSave').onclick=()=>Store.saveNow(true);
+$('pAB').addEventListener('pointerdown',()=>{if(hi<=0)return;abHold=JSON.stringify(cfg);cfg=Object.assign({},DEF,JSON.parse(hist[hi-1]));applyCfg();syncPanelValues();$('pAB').textContent='B'});
+addEventListener('pointerup',()=>{if(!abHold)return;cfg=Object.assign({},DEF,JSON.parse(abHold));abHold=null;applyCfg();syncPanelValues();$('pAB').textContent='A/B'});
+(function(){const grip=$('pGrip');let drag=false;
+ grip.addEventListener('pointerdown',e=>{drag=true;$('panel').classList.add('resizing');try{grip.setPointerCapture(e.pointerId)}catch(x){}});
+ grip.addEventListener('pointermove',e=>{if(!drag)return;const w=clamp(W-e.clientX,300,Math.min(620,W-40));$('panel').style.width=w+'px';panelState.w=w});
+ grip.addEventListener('pointerup',()=>{drag=false;$('panel').classList.remove('resizing');lsSet(PK2,panelState)})})();
+function applyCfg(){const M=cfg.master/100,root=document.documentElement.style;
+ root.setProperty('--accent',cfg.accent);root.setProperty('--accent2',cfg.accent2);
+ if(window.THREE){const c=new THREE.Color(cfg.accent);root.setProperty('--glow','rgba('+Math.round(c.r*255)+','+Math.round(c.g*255)+','+Math.round(c.b*255)+',.42)')}
+ root.setProperty('--grain',(cfg.grain/100).toFixed(3));root.setProperty('--vig',(cfg.vig/100).toFixed(3));
+ if(R)R.setPixelRatio(Math.min(devicePixelRatio,cfg.qual));
+ if(U){U.neb.value=cfg.neb/100*M;U.glow.value=cfg.glow/100*M;U.tint.value.set(cfg.accent);U.tint2.value.set(cfg.accent2)}
+ const fogD=cfg.fog/100*.0009;
+ if(pgS)pgS.fog.density=fogD*.5;if(galS)galS.fog.density=fogD*.28;
+ if(gridRing)gridRing.visible=cfg.grid;if(galLines)galLines.material.opacity=cfg.link/100*.45;
+ if(galC&&!G.flight){galC.fov=cfg.fov;galC.updateProjectionMatrix()}
+ if(dustPts)dustPts.material.color.set(cfg.accent);
+ seedParts();
+ const tk=document.querySelector('.ticker');if(tk)tk.style.display=cfg.ticker?'':'none';
+ $('pDpr').textContent=cfg.qual;$('spParams').textContent=SCHEMA.length+1;
+ $('tMode').textContent=G.on?'ГАЛАКТИКА':'КАТАЛОГ';$('pMode').textContent=G.on?'ГАЛАКТИКА':'КАТАЛОГ';
+ syncPanelValues()}
+$('soundBtn').onclick=()=>setSound(!sound);$('galBtn').onclick=()=>setGalaxy(!G.on);$('heroGal').onclick=()=>setGalaxy(true);
+$('tgNext').onclick=()=>{const i=galStars.indexOf(G.focus);flyToStar(galStars[(i+1)%galStars.length])};
+$('tgPrev').onclick=()=>{const i=galStars.indexOf(G.focus);flyToStar(galStars[(i-1+galStars.length)%galStars.length])};
+$('tgOverview').onclick=overview;$('tgOpen').onclick=()=>{if(G.focus)warpJump(G.focus.userData.link,null)};
+function openStore(){Store.ui();openOv('storeOv')}
+$('storeChip').onclick=()=>{if(Store.mode==='reconnect')Store.reconnect();else openStore()};
+$('sClose').onclick=()=>closeOv('storeOv');$('sSave').onclick=()=>Store.saveNow(true);$('sConnect').onclick=()=>Store.connect();$('sOpen').onclick=()=>Store.openFile();$('sDownload').onclick=()=>Store.download();
+$('sDisconnect').onclick=()=>confirmBox('Отключить файл?','Данные останутся в профиле.',()=>Store.disconnect());
+$('sAuto').onchange=e=>{Store.auto=e.target.checked;lsSet('nebula_autosave',Store.auto);Store.ui()};
+$('sAutoExport').onchange=e=>{Store.autoExport=e.target.checked;lsSet('nebula_autoexport',Store.autoExport);Store.ui()};
+$('pSelect').onchange=e=>Store.switchProfile(e.target.value);
+$('pNew').onclick=()=>{const n=prompt('Название профиля','Новый профиль');if(n)Store.newProfile(n)};
+$('pDup').onclick=()=>Store.dupProfile();$('pRename').onclick=()=>{const n=prompt('Новое название',profiles[activeId].name);if(n)Store.renameProfile(n)};
+$('pDel').onclick=()=>confirmBox('Удалить профиль?','Профиль и его снапшоты будут удалены.',()=>Store.delProfile());
+$('snapNow').onclick=()=>{Store.snapshot();toast('Снапшот создан','ok')};
+$('sWipe').onclick=()=>confirmBox('Очистить профиль?','Все ссылки будут удалены. Снапшот создастся автоматически.',()=>{Store.snapshot();links=[];Store.touch();renderAll();toast('Профиль очищен','ok')});
+$('filePick').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);
+ if(d.kind==='share')SH.preview(d);else if(d.kind==='config'&&d.cfg){cfg=Object.assign({},DEF,d.cfg);if(Array.isArray(d.presets)){userPresets=d.presets;lsSet(UK,userPresets)}applyCfg();pushHist();Store.touch();renderPanel();toast('Конфиг импортирован','ok')}
+ else if(applyDoc(d)){Store.commit(true);toast('Загружено','ok')}}catch(x){toast('Не удалось прочитать JSON','err')}};r.readAsText(f);e.target.value=''};
+addEventListener('dragover',e=>{if(e.dataTransfer&&[...e.dataTransfer.types].includes('Files'))e.preventDefault()});
+addEventListener('drop',e=>{if(!e.dataTransfer||!e.dataTransfer.files.length)return;e.preventDefault();const f=e.dataTransfer.files[0];const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.kind==='share')SH.preview(d);else if(applyDoc(d)){Store.commit(true);toast('Загружено','ok')}}catch(x){toast('Это не файл NEBULA','err')}};r.readAsText(f)});
+async function openShare(){await SH.build();openOv('shareOv')}
+$('shareBtn').onclick=openShare;$('shClose').onclick=()=>closeOv('shareOv');
+$('shareScope').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{SH.scope=b.dataset.s;$('shareScope').querySelectorAll('.opt').forEach(x=>x.classList.toggle('on',x===b));SH.build()});
+$('shareInc').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{SH.inc[b.dataset.i]=!SH.inc[b.dataset.i];b.classList.toggle('on',SH.inc[b.dataset.i]);SH.build()});
+function copyText(t,m){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast(m,'ok')).catch(()=>fb());else fb();function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast(m,'ok')}catch(e){toast('Скопируйте вручную','err')}a.remove()}}
+$('shCopyLink').onclick=()=>copyText($('shareLink').value,'Ссылка скопирована');$('shCopyCode').onclick=()=>copyText($('shareCode').value,'Код скопирован');$('shFile').onclick=()=>SH.file();$('shPick').onclick=()=>$('filePick').click();
+$('shImport').onclick=async()=>{const v=$('shareIn').value.trim();if(!v)return toast('Вставьте код или ссылку','err');try{SH.preview(await SH.decode(v))}catch(e){toast(e.message,'err')}};
+$('impCancel').onclick=()=>closeOv('impOv');$('impMerge').onclick=()=>SH.apply('merge');$('impReplace').onclick=()=>SH.apply('replace');
+let pItems=[],pi=0,palOn=false;
+function palOpen(v){palOn=v;$('pal').classList.toggle('on',v);if(v){$('palQ').value='';palBuild('');setTimeout(()=>$('palQ').focus(),80)}}
+$('palBtn').onclick=()=>palOpen(true);
+function palBuild(q){const cmds=[{t:'🌌 Галактика',h:'режим',f:()=>setGalaxy(!G.on)},{t:'◈ Пульт управления',h:'панель',f:()=>setPanel(!panelOpen)},{t:'✈ Автотур',h:'полёт',f:()=>{if(!G.on)setGalaxy(true);G.tour=true;flyToStar(galStars[0])}},
+ {t:'＋ Новая звезда',h:'действие',f:()=>openModal(null)},{t:'💾 Библиотека',h:'хранилище',f:openStore},{t:'🔗 Поделиться',h:'обмен',f:openShare},{t:'💻 Терминал',h:'режим',f:()=>termOpen(true)},
+ {t:'☑ Режим выбора',h:'архив',f:()=>setSelMode(!selMode)},{t:'↺ Сбросить фильтры',h:'архив',f:resetFilters},{t:'⌨ Горячие клавиши',h:'справка',f:()=>openOv('keysOv')},
+ {t:'🎲 Рандом конфига',h:'пульт',f:()=>$('pRand').click()},{t:(sound?'🔇':'🔊')+' Звук',h:'аудио',f:()=>setSound(!sound)},{t:'💾 Сохранить',h:'Ctrl+S',f:()=>Store.saveNow(true)}]
+ .concat(PRESETS.map(p=>({t:'🎨 Пресет: '+p.n,h:'пульт',f:()=>applyPreset(p.id)})));
+ const ls=links.map(l=>({t:CAT[l.cat].i+' '+l.title,h:domOf(l.url),f:()=>{if(G.on){const s=galStars.find(x=>x.userData.link.id===l.id);flyToStar(s);setTimeout(()=>warpJump(l,null),1500)}else warpJump(l,null)}}));
+ const all=cmds.concat(ls);pItems=(q?all.filter(x=>(x.t+' '+x.h).toLowerCase().includes(q.toLowerCase())):all).slice(0,9);pi=0;palRender()}
+function palRender(){$('plist').innerHTML=pItems.map((x,i)=>'<div class="pi '+(i===pi?'on':'')+'" data-i="'+i+'"><span>'+esc(x.t)+'</span><small>'+esc(x.h)+'</small></div>').join('')||'<div class="pi">Ничего не найдено</div>';
+ $('plist').querySelectorAll('.pi[data-i]').forEach(e=>e.onclick=()=>{palOpen(false);pItems[+e.dataset.i].f()})}
+$('palQ').addEventListener('input',e=>palBuild(e.target.value));
+$('palQ').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='ArrowDown'){e.preventDefault();pi=Math.min(pItems.length-1,pi+1);palRender()}if(e.key==='ArrowUp'){e.preventDefault();pi=Math.max(0,pi-1);palRender()}if(e.key==='Enter'&&pItems[pi]){palOpen(false);pItems[pi].f()}if(e.key==='Escape')palOpen(false)});
+let termOn=false,hist2=[],hi2=-1,sug=[],si=0;
+function tp(t,c){const d=document.createElement('div');if(c)d.className=c;d.textContent=t;$('tout').appendChild(d);$('tout').scrollTop=1e6}
+function termOpen(v){termOn=v;$('term').classList.toggle('on',v);if(v){$('tin').focus();if(!$('tout').children.length){tp('NEBULA SHELL · введите help','o');tp('TAB — дополнение, ↑↓ — история','d')}sugUp()}}
+$('termBtn').onclick=()=>termOpen(true);$('termX').onclick=()=>termOpen(false);
+const CMD=[
+ {n:'help',a:'',d:'команды',r:()=>{tp('КОМАНДЫ:','a');CMD.forEach(c=>tp('  '+c.n.padEnd(11)+c.a.padEnd(20)+' — '+c.d,'d'))}},
+ {n:'open',a:'<имя>',d:'вояж к сайту',c:()=>links.map(l=>l.title.toLowerCase()),r:q=>{const l=links.find(x=>(x.title+' '+domOf(x.url)).toLowerCase().includes(q.toLowerCase()));if(!l)return tp('Не найдено','e');termOpen(false);warpJump(l,null)}},
+ {n:'fly',a:'<имя>',d:'подлёт в галактике',c:()=>links.map(l=>l.title.toLowerCase()),r:q=>{const l=links.find(x=>x.title.toLowerCase().includes(q.toLowerCase()));if(!l)return tp('Не найдено','e');if(!G.on)setGalaxy(true);setTimeout(()=>flyToStar(galStars.find(s=>s.userData.link.id===l.id)),350);tp('Курс: '+l.title,'o')}},
+ {n:'galaxy',a:'[on|off]',d:'галактика',c:()=>['on','off'],r:(q,a)=>setGalaxy(a[0]!=='off')},
+ {n:'panel',a:'[on|off]',d:'пульт',c:()=>['on','off'],r:(q,a)=>setPanel(a[0]!=='off')},
+ {n:'set',a:'<param> <val>',d:'параметр пульта',c:()=>SCHEMA.map(s=>s.k),r:(q,a)=>{const s=SCHEMA.find(x=>x.k===a[0]);if(!s)return tp('Нет параметра '+a[0],'e');
+  let v=a[1];if(s.type==='toggle')v=v==='on'||v==='true';else if(s.type!=='color')v=+v;if(v===undefined||Number.isNaN(v))return tp('Некорректное значение','e');
+  setCfg(s.k,v);renderPanel();tp(s.k+' = '+cfg[s.k],'o')}},
+ {n:'preset',a:'<имя>',d:'применить пресет',c:()=>PRESETS.concat(userPresets).map(p=>p.n.toLowerCase()),r:q=>{const p=PRESETS.concat(userPresets).find(x=>x.n.toLowerCase().includes(q.toLowerCase()));if(!p)return tp('Не найдено','e');applyPreset(p.id);tp('Пресет: '+p.n,'o')}},
+ {n:'presets',a:'',d:'список пресетов',r:()=>PRESETS.concat(userPresets).forEach(p=>tp('· '+p.n,'d'))},
+ {n:'add',a:'<url> [имя]',d:'добавить',r:(q,a)=>{if(!a[0])return tp('add <url> [имя]','e');let u=a[0];if(!/^https?:/.test(u))u='https://'+u;if(links.some(l=>domOf(l.url)===domOf(u)))return tp('Дубликат','e');
+  links.push({id:'c'+Date.now(),title:(a.slice(1).join(' ')||domOf(u)).slice(0,42),url:u,cat:'tools',desc:'Добавлено через терминал',tags:['своё'],fav:false,hits:0,ts:Date.now(),custom:true});Store.touch();renderAll();tp('Добавлено','o')}},
+ {n:'del',a:'<имя>',d:'удалить',c:()=>links.map(l=>l.title.toLowerCase()),r:q=>{const l=links.find(x=>x.title.toLowerCase().includes(q.toLowerCase()));if(!l)return tp('Не найдено','e');termOpen(false);removeLink(l)}},
+ {n:'find',a:'<запрос>',d:'фильтр',r:q=>{$('q').value=q;query=q;$('qClear').classList.toggle('on',!!q);renderGrid();tp('Фильтр: '+q,'o')}},
+ {n:'list',a:'[кат]',d:'список',c:()=>Object.keys(CAT),r:(q,a)=>{(a[0]?links.filter(l=>l.cat===a[0]):links).forEach(l=>tp('· '+l.title+' — '+domOf(l.url),'d'))}},
+ {n:'save',a:'',d:'сохранить',r:async()=>{await Store.saveNow(true);tp('Сохранено','o')}},
+ {n:'storage',a:'',d:'библиотека',r:()=>{termOpen(false);openStore()}},
+ {n:'profiles',a:'',d:'профили',r:()=>Object.entries(profiles).forEach(([id,p])=>tp((id===activeId?'→ ':'  ')+p.name,'d'))},
+ {n:'profile',a:'<имя>',d:'переключить',c:()=>Object.values(profiles).map(p=>p.name.toLowerCase()),r:q=>{const e=Object.entries(profiles).find(([id,p])=>p.name.toLowerCase().includes(q.toLowerCase()));if(!e)return tp('Не найдено','e');Store.switchProfile(e[0]);tp('Профиль: '+e[1].name,'o')}},
+ {n:'share',a:'',d:'обмен',r:()=>{termOpen(false);openShare()}},
+ {n:'sound',a:'<on|off>',d:'звук',c:()=>['on','off'],r:(q,a)=>setSound(a[0]!=='off')},
+ {n:'stats',a:'',d:'статистика',r:()=>tp('Звёзд: '+links.length+' · прыжков: '+links.reduce((a,l)=>a+l.hits,0)+' · '+profiles[activeId].name+' · FPS '+fps,'o')},
+ {n:'tour',a:'',d:'автотур',r:()=>{if(!G.on)setGalaxy(true);G.tour=true;flyToStar(galStars[0])}},
+ {n:'clear',a:'',d:'очистить',r:()=>{$('tout').innerHTML=''}}
+];
+function sugUp(){const raw=$('tin').value,p=raw.split(/\s+/),n=(p[0]||'').toLowerCase(),c=CMD.find(x=>x.n===n);sug=[];si=0;
+ if(p.length<=1){sug=CMD.filter(x=>x.n.startsWith(n)).slice(0,8).map(x=>({l:x.n,h:x.a||'—',v:x.n+' '}));$('thint').innerHTML=c?'<b>'+c.n+'</b> '+c.a+' — '+c.d:(sug[0]?'<b>'+sug[0].l+'</b> — '+CMD.find(x=>x.n===sug[0].l).d:'Введите команду или help')}
+ else if(c){const q=(p[p.length-1]||'').toLowerCase(),o=c.c?c.c():[];sug=o.filter(x=>x.startsWith(q)).slice(0,8).map(x=>({l:x,h:c.n,v:p.slice(0,-1).join(' ')+' '+x+' '}));$('thint').innerHTML='<b>'+c.n+'</b> '+c.a+' — '+c.d}
+ else $('thint').innerHTML='Неизвестная команда';
+ $('tsug').innerHTML=sug.map((s,i)=>'<button class="sg '+(i===si?'on':'')+'" data-i="'+i+'">'+s.l+'</button>').join('');
+ $('tsug').querySelectorAll('.sg').forEach(b=>b.onclick=()=>{$('tin').value=sug[+b.dataset.i].v;$('tin').focus();sugUp()})}
+$('tin').addEventListener('input',sugUp);
+$('tin').addEventListener('keydown',async e=>{e.stopPropagation();
+ if(e.key==='Tab'){e.preventDefault();if(sug.length){si=(si+(e.shiftKey?-1:1)+sug.length)%sug.length;$('tin').value=sug[si].v;sugUp()}return}
+ if(e.key==='Enter'){const v=$('tin').value.trim();if(!v)return;tp('❯ '+v,'a');hist2=[v].concat(hist2.filter(h=>h!==v)).slice(0,40);hi2=-1;
+  const p=v.split(/\s+/),c=CMD.find(x=>x.n===p[0].toLowerCase());if(c){try{await c.r(p.slice(1).join(' '),p.slice(1))}catch(x){tp('Ошибка: '+x.message,'e')}}else tp('Неизвестная команда','e');$('tin').value='';sugUp();return}
+ if(e.key==='ArrowUp'){e.preventDefault();if(hist2.length){hi2=Math.min(hist2.length-1,hi2+1);$('tin').value=hist2[hi2];sugUp()}return}
+ if(e.key==='ArrowDown'){e.preventDefault();if(hi2>0){hi2--;$('tin').value=hist2[hi2]}else{hi2=-1;$('tin').value=''}sugUp();return}
+ if(e.key==='Escape')termOpen(false)});
+const secs=['hero','fav','arch','sys'];
+function onScroll(){const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);scrollN=clamp(scrollY/max,0,1);
+ $('prog').style.width=scrollN*100+'%';$('tScroll').textContent=Math.round(scrollN*100)+'%';
+ $('toTop').classList.toggle('on',scrollY>500&&!G.on);
+ let act=0;secs.forEach((id,i)=>{const e=$(id);if(e&&e.getBoundingClientRect().top<innerHeight*.45)act=i});
+ document.querySelectorAll('.nlinks a').forEach((a,i)=>a.classList.toggle('on',i===act));document.querySelectorAll('.mm').forEach((m,i)=>m.classList.toggle('on',i===act))}
+addEventListener('scroll',onScroll,{passive:true});
+$('mini').innerHTML=secs.map((s,i)=>'<button class="mm" data-s="'+s+'" title="'+['Обзор','Избранные','Архив','Система'][i]+'"><span>'+['00 ОБЗОР','01 ИЗБРАННЫЕ','02 АРХИВ','03 СИСТЕМА'][i]+'</span></button>').join('');
+$('mini').querySelectorAll('.mm').forEach(b=>b.onclick=()=>$(b.dataset.s).scrollIntoView({behavior:'smooth'}));
+$('toTop').onclick=()=>scrollTo({top:0,behavior:'smooth'});
+$('heroKeys').onclick=()=>openOv('keysOv');$('keysClose').onclick=()=>closeOv('keysOv');
+$('fKeys').onclick=()=>openOv('keysOv');$('fStore').onclick=openStore;$('fShare').onclick=openShare;$('fPanel').onclick=()=>setPanel(true);$('fTerm').onclick=()=>termOpen(true);
+$('menuBtn').onclick=()=>openOv('mobOv');$('mobClose').onclick=()=>closeOv('mobOv');
+document.querySelectorAll('[data-mob]').forEach(a=>a.onclick=()=>closeOv('mobOv'));
+$('mGal').onclick=()=>{closeOv('mobOv');setGalaxy(true)};$('mPanel').onclick=()=>{closeOv('mobOv');setPanel(true)};
+$('mAdd').onclick=()=>{closeOv('mobOv');openModal(null)};$('mStore').onclick=()=>{closeOv('mobOv');openStore()};
+$('mShare').onclick=()=>{closeOv('mobOv');openShare()};$('mPal').onclick=()=>{closeOv('mobOv');palOpen(true)};
+$('mTerm').onclick=()=>{closeOv('mobOv');termOpen(true)};$('mKeys').onclick=()=>{closeOv('mobOv');openOv('keysOv')};
+$('mSound').onclick=()=>setSound(!sound);
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(e=>io.observe(e));
+addEventListener('resize',()=>{W=innerWidth;H=innerHeight;if(R){R.setSize(W,H);[pgC,galC,warpC].forEach(c=>{c.aspect=W/H;c.updateProjectionMatrix()})}sizeFx();sizeTrail();sizeWarp();seedParts();onScroll()});
+addEventListener('keydown',e=>{const typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();Store.saveNow(true);return}
+ if(WP.busy){if(e.key==='Escape'){e.preventDefault();voyageAbort()}if(e.key===' '||e.key==='Enter'){e.preventDefault();voyageLand()}return}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();palOpen(!palOn);return}
+ if(panelOpen&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return}
+ if(e.code==='Backquote'&&!typing){e.preventDefault();termOpen(!termOn);return}
+ if(e.key==='Escape'){if(palOn)return palOpen(false);const ov=document.querySelector('.ov.on');if(ov)return ov.classList.remove('on');if(termOn)return termOpen(false);if(panelOpen)return setPanel(false);if(selected.size){selected.clear();return updateBulk()}if(selMode)return setSelMode(false);if(G.focus)return overview();if(G.on)return setGalaxy(false);if(query){query='';$('q').value='';$('qClear').classList.remove('on');renderGrid()}return}
+ if(typing||palOn||termOn)return;
+ if(panelOpen&&/^[1-5]$/.test(e.key)){pTab=TABS[+e.key-1].k;panelState.tab=pTab;lsSet(PK2,panelState);renderPanel();return}
+ if(panelOpen&&e.key.toLowerCase()==='r'&&!e.ctrlKey&&!e.metaKey){e.preventDefault();$('pRand').click();return}
+ if(e.key==='?'){e.preventDefault();openOv('keysOv');return}
+ if(e.key.toLowerCase()==='p'){e.preventDefault();setPanel(!panelOpen);return}
+ if(e.key.toLowerCase()==='n'){e.preventDefault();openModal(null);return}
+ if(e.key.toLowerCase()==='v'){e.preventDefault();setSelMode(!selMode);return}
+ if(e.key==='/'){e.preventDefault();$('q').focus();return}
+ if(e.key.toLowerCase()==='g'){setGalaxy(!G.on);return}
+ if(view==='deck'&&$('grid')._deck){if(e.key==='ArrowLeft'){e.preventDefault();$('grid')._deck('pass')}if(e.key==='ArrowRight'){e.preventDefault();$('grid')._deck('fav')}if(e.key==='Enter'){e.preventDefault();$('grid')._deck('open')}}});
+$('bootMark').innerHTML=[...'NEBULA'].map((c,i)=>'<i style="--i:'+i+'">'+c+'</i>').join('');
+$('heroTitle').innerHTML=[...'NEBULA'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('');
+sizeFx();sizeTrail();sizeWarp();
+const threeOK=initThree();if(threeOK)requestAnimationFrame(loop);else $('space').style.background='radial-gradient(circle at 50% 40%,#101a33,#070a16 70%)';
+(async()=>{Store.init();await Store.initFile();renderViews();renderAll();
+ if(panelState.w)$('panel').style.width=clamp(panelState.w,300,620)+'px';
+ applyCfg();renderTabs();updateHistBtns();
+ $('soundBtn').textContent=sound?'🔊':'🔇';$('soundBtn').classList.toggle('on',sound);$('mSound').textContent=sound?'🔇 Выключить звук':'🔊 Включить звук';
+ bindCursor();onScroll();
+ const m=location.hash.match(/#share=([^&]+)/);if(m){try{SH.preview(await SH.decode(decodeURIComponent(m[1])))}catch(e){toast('Пакет повреждён','err')}}
+ let bp=0;const bi=setInterval(()=>{bp=Math.min(100,bp+Math.random()*26+13);$('bootBar').style.width=bp+'%';$('bootPct').textContent=Math.floor(bp)+'%';
+  if(bp>=100){clearInterval(bi);setTimeout(()=>{$('boot').classList.add('off');setTimeout(()=>$('boot').remove(),600)},240)}},95);
+ $('boot').addEventListener('click',()=>{clearInterval(bi);$('boot').classList.add('off');setTimeout(()=>$('boot').remove(),600)})})();
+setInterval(()=>{$('tUtc').textContent=new Date().toISOString().slice(11,19)},1000);
+</script>
+</body>
+</html>
